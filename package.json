@@ -1,0 +1,15 @@
+{
+  "name"          : "cube",
+  "version"       : "0.1",
+  "description"   : "cube app",
+  "url"           : "http://kkasravi.github.com/cube.git",
+  "keywords"      : ["css3", "cube"],
+  "author"        : "Kam Kasravi <kkasravi@yahoo.com>",
+  "dependencies"  : {
+    "require": "*",
+    "monads": "*",
+    "svg": "*"
+  },
+  "lib"           : "./lib",
+  "main"          : "./lib/cube.js"
+}
