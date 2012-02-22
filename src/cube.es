@@ -16,10 +16,30 @@ module cube {
   class Play {
     constructor() {
       private element;
-      @element = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','font-family':'Sans-Serif','font-size':'80px','-webkit-transform':'translateX(130px) translateY(-80px) rotateY(-230deg) rotateX(77deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow('3px 3px 9px #FFF').text('Math Ninja');
+      @element = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','color':'white','font-family':'Bemio','font-size':'80px','-webkit-transform':'translateX(130px) translateY(-80px) rotateY(-230deg) rotateX(77deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Play.shadow).text('Math Ninja');
       @element.delay(@element.style,[{'-webkit-transform':'translateX(130px) translateY(-80px) rotateY(-230deg) rotateX(0deg)'}],300);
       return @element;
     }
+    static init = (function() {
+      var styles = [
+        {selector:'@font-face',style:'font-family:Bemio;src:url(/cube/lib/Bemio.otf);'}
+      ];
+      monads.Styleable(styles).on("load").onstyle();
+    })()
+    static shadow = [
+      '0 1px 0 #ccc', 
+      '0 2px 0 #c9c9c9',
+      '0 3px 0 #bbb',
+      '0 4px 0 #b9b9b9',
+      '0 5px 0 #aaa',
+      '0 6px 1px rgba(0,0,0,0.1)',
+      '0 0 5px rgba(0,0,0,0.1)',
+      '0 1px 3px rgba(0,0,0,0.3)',
+      '0 3px 5px rgba(0,0,0,0.2)',
+      '0 5px 10px rgba(0,0,0,0.25)',
+      '0 10px 10px rgba(0,0,0,0.2)',
+      '0 20px 20px rgba(0,0,0,0.15)'
+    ]
   }
 
   class Multiply {
