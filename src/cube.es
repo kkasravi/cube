@@ -13,40 +13,42 @@ module cube {
     }
   }
 
-  class Play {
+  class Title {
     constructor() {
-      private element;
-      @element = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','color':'white','font-family':'Bemio','font-size':'80px','-webkit-transform':'translateX(130px) translateY(-80px) rotateY(-230deg) rotateX(77deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Play.shadow).text('Math Ninja');
-      @element.delay(@element.style,[{'-webkit-transform':'translateX(130px) translateY(-80px) rotateY(-230deg) rotateX(0deg)'}],300);
-      return @element;
+      private title;
+      @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','width':'420px','color':'#e97825','font-family':'maagkramp','font-size':'80px','-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(77deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('Ninja Math');
+      @title.delay(@title.style,[{'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(0deg)'}],300);
+      return @title;
     }
-    static init = (function() {
-      var styles = [
-        {selector:'@font-face',style:'font-family:Bemio;src:url(/cube/lib/Bemio.otf);'}
-      ];
-      monads.Styleable(styles).on("load").onstyle();
-    })()
-    static shadow = [
-      '0 1px 0 #ccc', 
-      '0 2px 0 #c9c9c9',
-      '0 3px 0 #bbb',
-      '0 4px 0 #b9b9b9',
-      '0 5px 0 #aaa',
-      '0 6px 1px rgba(0,0,0,0.1)',
-      '0 0 5px rgba(0,0,0,0.1)',
-      '0 1px 3px rgba(0,0,0,0.3)',
-      '0 3px 5px rgba(0,0,0,0.2)',
-      '0 5px 10px rgba(0,0,0,0.25)',
-      '0 10px 10px rgba(0,0,0,0.2)',
-      '0 20px 20px rgba(0,0,0,0.15)'
-    ]
+  }
+
+  class Selector {
+    constructor() {
+      private choice;
+      @choice =  monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-70px) translateY(170px) rotateY(-70deg)','white-space':'nowrap','height':'60px','width':'60px','color':'#e97825','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u25B2')
+      return @choice;
+    }
+  }
+
+  class Difficulty {
+    constructor() {
+      private difficulty;
+      @difficulty = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg)','-webkit-transition':'-webkit-transform 400ms linear'}).add(
+        monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-70px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u27BD')
+      ).add(
+        monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Easy')
+      ).add(
+        monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(200px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Hard')
+      );
+      return @difficulty;
+    }
   }
 
   class Multiply {
     constructor() {
       private element, id;
       @id = Math.uuid(8);
-      this.onclick = this.onclick.bind(this);
+      this.ontouchend = this.ontouchend.bind(this);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'multiply'}).add(
         svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"200.0",height:"200.0"}).
           defs().
@@ -96,7 +98,7 @@ module cube {
           end().
           g({transform:"matrix(0.5,0,0,-0.5,-10.0,400.0)"}).
             g({'clip-path':"url(#"+@id+"clipPath2346)"}).
-              path({d:"m 316.271,471.327 -170.078,0 c -34.388,0 -62.364,27.977 -62.364,62.365 l 0,170.077 c 0,34.385 27.976,62.361 62.364,62.361 l 170.078,0 c 34.388,0 62.363,-27.976 62.363,-62.361 l 0,-170.077 c 0,-34.388 -27.975,-62.365 -62.363,-62.365",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+              path({d:"m 316.271,471.327 -170.078,0 c -34.388,0 -62.364,27.977 -62.364,62.365 l 0,170.077 c 0,34.385 27.976,62.361 62.364,62.361 l 170.078,0 c 34.388,0 62.363,-27.976 62.363,-62.361 l 0,-170.077 c 0,-34.388 -27.975,-62.365 -62.363,-62.365",style:"fill:#0000ff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
             end().
             g({'clip-path':"url(#"+@id+"clipPath2356)"}).
               path({d:"M 0,0 851,0 851,851 0,851 0,0 z",style:"fill:url(#"+@id+"linearGradient2368);stroke:none"}).end().
@@ -117,11 +119,10 @@ module cube {
           end().
         end().svg
       );
-      @element.on('click').bind(this.onclick);
+      @element.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
       return @element;
     }
-    onclick(event) {
-console.log('publishing play multiply');
+    ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'play',canBubble:false,isCanceleable:true,detail:'multiply'}));
     }
     static init = (function() {
@@ -136,7 +137,7 @@ console.log('publishing play multiply');
     constructor() {
       private element, id;
       @id = Math.uuid(8);
-      this.onclick = this.onclick.bind(this);
+      this.ontouchend = this.ontouchend.bind(this);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'plus'}).add(
         svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"368.0",height:"200.0"}).
           defs().
@@ -206,11 +207,10 @@ console.log('publishing play multiply');
           end().
         end().svg
       );
-      @element.on('click').bind(this.onclick);
+      @element.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
       return @element;
     }
-    onclick(event) {
-console.log('publishing play plus');
+    ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'play',canBubble:false,isCanceleable:true,detail:'plus'}));
     }
     static init = (function() {
@@ -225,7 +225,7 @@ console.log('publishing play plus');
     constructor() {
       private element, id;
       @id = Math.uuid(8);
-      this.onclick = this.onclick.bind(this);
+      this.ontouchend = this.ontouchend.bind(this);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'divide'}).add(
         svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"200.0",height:"200.0"}).
           defs().
@@ -290,11 +290,10 @@ console.log('publishing play plus');
           end().
         end().svg
       );
-      @element.on('click').bind(this.click);
+      @element.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
       return @element;
     }
-    onclick(event) {
-console.log('publishing play divide');
+    ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'play',canBubble:false,isCanceleable:true,detail:'divide'}));
     }
     static init = (function() {
@@ -309,7 +308,7 @@ console.log('publishing play divide');
     constructor() {
       private element, id;
       @id = Math.uuid(8);
-      this.onclick = this.onclick.bind(this);
+      this.ontouchend = this.ontouchend.bind(this);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'minus'}).add(
         svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"350.0",height:"270.0"}).
           defs().
@@ -375,11 +374,10 @@ console.log('publishing play divide');
           end().
         end().svg
       );
-      @element.on('click').bind(this.onclick);
+      @element.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
       return @element;
     }
-    onclick(event) {
-console.log('publishing play minus');
+    ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'play',canBubble:false,isCanceleable:true,detail:'minus'}));
     }
     static init = (function() {
@@ -392,18 +390,20 @@ console.log('publishing play minus');
 
   class Main {
     constructor() {
-      private container, divide, frame, minus, multiply, play, plus;
+      private container, difficulty, divide, frame, minus, multiply, plus, selector, title;
       this.ontouchstart = this.ontouchstart.bind(this);
       this.ontouchmove = this.ontouchmove.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
-      @play = Play();
+      this.onplay = this.onplay.bind(this);
+      @title = Title();
+      @difficulty = Difficulty();
       @minus = Minus();
       @plus = Plus();
       @divide = Divide();
       @multiply = Multiply();
       @frame = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'frame'}).add(
         monads.DOMable({tagName:'div'}).on('load').attributes({'class':'inner'}).add(
-          @play
+          @title
         ).add(
           @multiply
         ).add(
@@ -416,19 +416,28 @@ console.log('publishing play minus');
           monads.DOMable({tagName:'div'}).on('load').attributes({'class':'e'})
         ).add(
           monads.DOMable({tagName:'div'}).on('load').attributes({'class':'f'})
+        ).add(
+          @difficulty
         )
       );
-      @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(@frame);
-      @container.insert(document.body).on('touchstart').bind(this.ontouchstart).on('touchmove').bind(this.ontouchmove).on('touchend').bind(this.ontouchend);
-      controller.Controller.subscribe('play',this.onplay.bind(this));
+      @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(@frame).insert(document.body);
+      controller.Controller.subscribe('play',this.onplay);
+      var moonrising = {selector:'@-webkit-keyframes moonrising',style:""}, arc;
+      for(var i = 0; i < 100; ++i) {
+        arc = 100.0 - parseFloat(i)/100.0*70.0;
+        moonrising.style += i + "% { background: -webkit-gradient(radial, 48% "+arc+"%, 0, 48% "+arc+"%, 350, from(rgba(0,0,255,0)), to(rgba(0,0,0,1))); } "; 
+      }
+      monads.Styleable([moonrising]).on("load").onstyle();
+      monads.DOMable({element:document.body}).on('touchstart').bind(this.ontouchstart).on('touchmove').bind(this.ontouchmove).on('touchend').bind(this.ontouchend);
+      monads.DOMable({element:document.body}).on('load').style({'-webkit-animation':'moonrising 2s 1'});
     }
     onplay(event) {
-      @play.style({'-webkit-transform':'translateX(130px) translateY(-80px) rotateY(-230deg) rotateX(77deg)'});
+      @title.style({'-webkit-transform':'translateX(130px) translateY(-80px) rotateY(-230deg) rotateX(77deg)'});
       @minus.style({'-webkit-transform':'rotateY(49deg) translateX(120px) translateY(-10px) translateZ(100px)'});
       @multiply.style({'-webkit-transform':' translateX(-50px) rotateY(-137deg)'});
       @divide.style({'-webkit-transform':'rotateY(213deg) translateX(40px) translateZ(80px)'});
       @plus.style({'-webkit-transform':'rotateY(90deg) translateX(206px) translateZ(300px) rotateY(-70.5deg)'});
-//      @frame.rotate({x:84}).delay(@frame.fadeout,null,500);
+      @difficulty.style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg) rotateX(110deg)'});
     }
     ontouchstart(event) {
       event.preventDefault();
@@ -439,15 +448,30 @@ console.log('publishing play minus');
     ontouchend(event) {
       event.preventDefault();
     }
+    static shadow = [
+      '0 1px 0 #ccc', 
+      '0 2px 0 #c9c9c9',
+      '0 3px 0 #bbb',
+      '0 4px 0 #b9b9b9',
+      '0 5px 0 #aaa',
+      '0 6px 1px rgba(0,0,0,0.1)',
+      '0 0 5px rgba(0,0,0,0.1)',
+      '0 1px 3px rgba(0,0,0,0.3)',
+      '0 3px 5px rgba(0,0,0,0.2)',
+      '0 5px 10px rgba(0,0,0,0.25)',
+      '0 10px 10px rgba(0,0,0,0.2)',
+      '0 20px 20px rgba(0,0,0,0.15)'
+    ]
     static init = (function() {
       var styles = [
-        {selector:'body',style:"background:#000;color:#e0e0ff;font-size:115%;margin:0;"},
-        {selector:'#container',style:"position: absolute;left: 50%; margin-left:-100px;top: 50%; margin-top:-100px;height: 200px;width: 200px;-webkit-perspective: 800;"},
+        {selector:'body',style:"background: -webkit-gradient(radial, 48% 30%, 0, 48% 30%, 350, from(rgba(0,0,255,0)), to(rgba(0,0,0,1)));color:#e0e0ff;font-size:115%;margin:0;"},
+        {selector:'#container',style:"position: absolute;left: 45%; margin-left:-100px;top: 35%; margin-top:-100px;height: 200px;width: 200px;-webkit-perspective: 800;"},
         {selector:'#frame',style:"opacity: 0.7;width: 200px;-webkit-transform-style: preserve-3d;-webkit-transform: translateZ(150px);-webkit-transition: all 0.5s linear;"},
         {selector:'.inner',style:"height:200px;width:200px;-webkit-transform-style: preserve-3d;-webkit-transform: rotateY(230deg);"},
         {selector:'.inner div',style:"position: absolute;height:200px;width:200px;background-size: 100% 100%;opacity: 1;-webkit-transform: rotateX(-90deg);"},
         {selector:'.inner .e',style:"top:100px;font-size:80px;"},
         {selector:'.inner .f',style:"top:-100px;"},
+        {selector:'@font-face',style:'font-family:maagkramp;src:url(/cube/lib/maagkramp.ttf);'},
         {selector:'@-webkit-keyframes spin2',style:"from { -webkit-transform: rotateY(0); } to   { -webkit-transform: rotateY(720deg); }"}
       ];
       monads.Styleable(styles).on("load").onstyle();
