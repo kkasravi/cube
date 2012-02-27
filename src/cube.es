@@ -16,17 +16,30 @@ module cube {
   class Title {
     constructor() {
       private title;
-      @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','width':'420px','color':'#e97825','font-family':'maagkramp','font-size':'80px','-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(77deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('Ninja Math');
+      @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','width':'420px','color':'#e97825','font-family':'maagkramp','font-size':'80px','-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('Ninja Math');
       @title.delay(@title.style,[{'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(0deg)'}],300);
       return @title;
     }
   }
 
-  class Selector {
+  class Play {
     constructor() {
-      private choice;
-      @choice =  monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-70px) translateY(170px) rotateY(-70deg)','white-space':'nowrap','height':'60px','width':'60px','color':'#e97825','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u25B2')
-      return @choice;
+      private choice, play;
+      this.onchoose = this.onchoose.bind(this);
+      this.ontouchend = this.ontouchend.bind(this);
+      @choice = null;
+      @play = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transition':'-webkit-transform 400ms linear','-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) rotateZ(0deg) scale(3.0)','white-space':'nowrap','height':'60px','width':'60px','color':'#e97825','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
+      @play.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
+      controller.Controller.subscribe('choose',this.onchoose);
+      return @play;
+    }
+    onchoose(event) {
+      @choice = event.detail;
+      @play.style({'-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(0deg) rotateZ(0deg) scale(3.0)'});
+    }
+    ontouchend(event) {
+log.Logger.debug(this,'publishing '+@choice);
+      @choice && controller.Controller.publish(events.CustomEvent({type:'play',canBubble:false,isCanceleable:true,detail:@choice}));
     }
   }
 
@@ -34,7 +47,7 @@ module cube {
     constructor() {
       private difficulty;
       @difficulty = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg)','-webkit-transition':'-webkit-transform 400ms linear'}).add(
-        monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-70px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u27BD')
+        monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-70px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794')
       ).add(
         monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Easy')
       ).add(
@@ -98,7 +111,7 @@ module cube {
           end().
           g({transform:"matrix(0.5,0,0,-0.5,-10.0,400.0)"}).
             g({'clip-path':"url(#"+@id+"clipPath2346)"}).
-              path({d:"m 316.271,471.327 -170.078,0 c -34.388,0 -62.364,27.977 -62.364,62.365 l 0,170.077 c 0,34.385 27.976,62.361 62.364,62.361 l 170.078,0 c 34.388,0 62.363,-27.976 62.363,-62.361 l 0,-170.077 c 0,-34.388 -27.975,-62.365 -62.363,-62.365",style:"fill:#0000ff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+              path({d:"m 316.271,471.327 -170.078,0 c -34.388,0 -62.364,27.977 -62.364,62.365 l 0,170.077 c 0,34.385 27.976,62.361 62.364,62.361 l 170.078,0 c 34.388,0 62.363,-27.976 62.363,-62.361 l 0,-170.077 c 0,-34.388 -27.975,-62.365 -62.363,-62.365",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
             end().
             g({'clip-path':"url(#"+@id+"clipPath2356)"}).
               path({d:"M 0,0 851,0 851,851 0,851 0,0 z",style:"fill:url(#"+@id+"linearGradient2368);stroke:none"}).end().
@@ -123,7 +136,7 @@ module cube {
       return @element;
     }
     ontouchend(event) {
-      controller.Controller.publish(events.CustomEvent({type:'play',canBubble:false,isCanceleable:true,detail:'multiply'}));
+      controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:'multiply'}));
     }
     static init = (function() {
       var styles = [
@@ -139,7 +152,7 @@ module cube {
       @id = Math.uuid(8);
       this.ontouchend = this.ontouchend.bind(this);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'plus'}).add(
-        svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"368.0",height:"200.0"}).
+        svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"180.0",height:"200.0"}).
           defs().
             clipPath({clipPathUnits:"userSpaceOnUse",id:@id+"clipPath4800"}).
               path({d:"M 0,0 851,0 851,851 0,851 0,0 z",id:"path4802"}).end().
@@ -211,7 +224,7 @@ module cube {
       return @element;
     }
     ontouchend(event) {
-      controller.Controller.publish(events.CustomEvent({type:'play',canBubble:false,isCanceleable:true,detail:'plus'}));
+      controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:'plus'}));
     }
     static init = (function() {
       var styles = [
@@ -294,7 +307,7 @@ module cube {
       return @element;
     }
     ontouchend(event) {
-      controller.Controller.publish(events.CustomEvent({type:'play',canBubble:false,isCanceleable:true,detail:'divide'}));
+      controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:'divide'}));
     }
     static init = (function() {
       var styles = [
@@ -378,7 +391,7 @@ module cube {
       return @element;
     }
     ontouchend(event) {
-      controller.Controller.publish(events.CustomEvent({type:'play',canBubble:false,isCanceleable:true,detail:'minus'}));
+      controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:'minus'}));
     }
     static init = (function() {
       var styles = [
@@ -390,7 +403,7 @@ module cube {
 
   class Main {
     constructor() {
-      private container, difficulty, divide, frame, minus, multiply, plus, selector, title;
+      private container, difficulty, divide, frame, minus, multiply, play, plus, title;
       this.ontouchstart = this.ontouchstart.bind(this);
       this.ontouchmove = this.ontouchmove.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
@@ -398,12 +411,15 @@ module cube {
       @title = Title();
       @difficulty = Difficulty();
       @minus = Minus();
+      @play = Play();
       @plus = Plus();
       @divide = Divide();
       @multiply = Multiply();
       @frame = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'frame'}).add(
         monads.DOMable({tagName:'div'}).on('load').attributes({'class':'inner'}).add(
           @title
+        ).add(
+          @play
         ).add(
           @multiply
         ).add(
@@ -432,7 +448,7 @@ module cube {
       monads.DOMable({element:document.body}).on('load').style({'-webkit-animation':'moonrising 2s 1'});
     }
     onplay(event) {
-      @title.style({'-webkit-transform':'translateX(130px) translateY(-80px) rotateY(-230deg) rotateX(77deg)'});
+      @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
       @minus.style({'-webkit-transform':'rotateY(49deg) translateX(120px) translateY(-10px) translateZ(100px)'});
       @multiply.style({'-webkit-transform':' translateX(-50px) rotateY(-137deg)'});
       @divide.style({'-webkit-transform':'rotateY(213deg) translateX(40px) translateZ(80px)'});
