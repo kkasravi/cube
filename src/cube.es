@@ -38,7 +38,6 @@ module cube {
       @play.style({'-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(0deg) rotateZ(0deg) scale(3.0)'});
     }
     ontouchend(event) {
-log.Logger.debug(this,'publishing '+@choice);
       @choice && controller.Controller.publish(events.CustomEvent({type:'play',canBubble:false,isCanceleable:true,detail:@choice}));
     }
   }
@@ -59,9 +58,12 @@ log.Logger.debug(this,'publishing '+@choice);
 
   class Multiply {
     constructor() {
-      private element, id;
+      private element, id, selected;
       @id = Math.uuid(8);
+      @selected = false;
+      this.onchoose = this.onchoose.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
+      controller.Controller.subscribe('choose',this.onchoose);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'multiply'}).add(
         svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"200.0",height:"200.0"}).
           defs().
@@ -135,6 +137,19 @@ log.Logger.debug(this,'publishing '+@choice);
       @element.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
       return @element;
     }
+    onchoose(event) {
+      var choice = event.detail;
+      if(choice === 'multiply') {
+        if(!@selected) {
+          @selected = true;
+          @element.styleProperty('webKitTransform');
+          @element.style({'webkitTransform':@element.styleProperty('webkitTransform')+' translateZ(-50px) translateX(-40px) translateY(10px) scale(1.2) rotateY(40deg)'});
+        }
+      } else {
+        @selected = false;
+        @element.style({'-webkit-transform':'translateX(-50px) rotateY(-90deg)'});
+      }
+    }
     ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:'multiply'}));
     }
@@ -148,9 +163,12 @@ log.Logger.debug(this,'publishing '+@choice);
 
   class Plus {
     constructor() {
-      private element, id;
+      private element, id, selected;
       @id = Math.uuid(8);
+      @selected = false;
+      this.onchoose = this.onchoose.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
+      controller.Controller.subscribe('choose',this.onchoose);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'plus'}).add(
         svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"180.0",height:"200.0"}).
           defs().
@@ -223,6 +241,19 @@ log.Logger.debug(this,'publishing '+@choice);
       @element.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
       return @element;
     }
+    onchoose(event) {
+      var choice = event.detail;
+      if(choice === 'plus') {
+        if(!@selected) {
+          @selected = true;
+          @element.styleProperty('webKitTransform');
+          @element.style({'webkitTransform':@element.styleProperty('webkitTransform')+' translateY(10px) scale(1.2) rotateY(40deg)'});
+        }
+      } else {
+        @selected = false;
+        @element.style({'-webkit-transform':'rotateY(90deg) translateX(206px) translateZ(300px)'});
+      }
+    }
     ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:'plus'}));
     }
@@ -236,9 +267,12 @@ log.Logger.debug(this,'publishing '+@choice);
 
   class Divide {
     constructor() {
-      private element, id;
+      private element, id, selected;
       @id = Math.uuid(8);
+      @selected = false;
+      this.onchoose = this.onchoose.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
+      controller.Controller.subscribe('choose',this.onchoose);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'divide'}).add(
         svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"200.0",height:"200.0"}).
           defs().
@@ -306,6 +340,19 @@ log.Logger.debug(this,'publishing '+@choice);
       @element.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
       return @element;
     }
+    onchoose(event) {
+      var choice = event.detail;
+      if(choice === 'divide') {
+        if(!@selected) {
+          @selected = true;
+          @element.styleProperty('webKitTransform');
+          @element.style({'webkitTransform':@element.styleProperty('webkitTransform')+' translateZ(40px) translateX(-30px) translateY(10px) scale(1.2) rotateY(-40deg)'});
+        }
+      } else {
+        @selected = false;
+        @element.style({'-webkit-transform':'rotateY(165deg) translateX(40px) translateZ(80px)'});
+      }
+    }
     ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:'divide'}));
     }
@@ -319,9 +366,11 @@ log.Logger.debug(this,'publishing '+@choice);
 
   class Minus {
     constructor() {
-      private element, id;
+      private element, id, selected;
       @id = Math.uuid(8);
+      this.onchoose = this.onchoose.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
+      controller.Controller.subscribe('choose',this.onchoose);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'minus'}).add(
         svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"350.0",height:"270.0"}).
           defs().
@@ -390,6 +439,19 @@ log.Logger.debug(this,'publishing '+@choice);
       @element.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
       return @element;
     }
+    onchoose(event) {
+      var choice = event.detail;
+      if(choice === 'minus') {
+        if(!@selected) {
+          @selected = true;
+          @element.styleProperty('webKitTransform');
+          @element.style({'webkitTransform':@element.styleProperty('webkitTransform')+' translateZ(-10px) translateX(40px) translateY(10px) scale(1.2) rotateY(-50deg)'});
+        }
+      } else {
+        @selected = false;
+        @element.style({'-webkit-transform':'translateX(120px) translateY(-10px) translateZ(100px)'});
+      }
+    }
     ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:'minus'}));
     }
@@ -403,11 +465,12 @@ log.Logger.debug(this,'publishing '+@choice);
 
   class Main {
     constructor() {
-      private container, difficulty, divide, frame, minus, multiply, play, plus, title;
+      private container, difficulty, divide, frame, minus, multiply, play, plus, title, wrapper;
       this.ontouchstart = this.ontouchstart.bind(this);
       this.ontouchmove = this.ontouchmove.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
       this.onplay = this.onplay.bind(this);
+      controller.Controller.subscribe('play',this.onplay);
       @title = Title();
       @difficulty = Difficulty();
       @minus = Minus();
@@ -436,19 +499,14 @@ log.Logger.debug(this,'publishing '+@choice);
           @difficulty
         )
       );
-      @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(@frame).insert(document.body);
-      controller.Controller.subscribe('play',this.onplay);
-      var moonrising = {selector:'@-webkit-keyframes moonrising',style:""}, arc;
-      for(var i = 0; i < 100; ++i) {
-        arc = 100.0 - parseFloat(i)/100.0*70.0;
-        moonrising.style += i + "% { background: -webkit-gradient(radial, 48% "+arc+"%, 0, 48% "+arc+"%, 350, from(rgba(0,0,255,0)), to(rgba(0,0,0,1))); } "; 
-      }
-      monads.Styleable([moonrising]).on("load").onstyle();
+      @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(@frame);
+      @wrapper = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'wrapper'}).insert(document.body).add(@container);
       monads.DOMable({element:document.body}).on('touchstart').bind(this.ontouchstart).on('touchmove').bind(this.ontouchmove).on('touchend').bind(this.ontouchend);
-      monads.DOMable({element:document.body}).on('load').style({'-webkit-animation':'moonrising 2s 1'});
+      @wrapper.style({'-webkit-animation':'moonrising 2s 1'});
     }
     onplay(event) {
       @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
+      @play.style({'-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) scale(3.0)'});
       @minus.style({'-webkit-transform':'rotateY(49deg) translateX(120px) translateY(-10px) translateZ(100px)'});
       @multiply.style({'-webkit-transform':' translateX(-50px) rotateY(-137deg)'});
       @divide.style({'-webkit-transform':'rotateY(213deg) translateX(40px) translateZ(80px)'});
@@ -480,9 +538,10 @@ log.Logger.debug(this,'publishing '+@choice);
     ]
     static init = (function() {
       var styles = [
-        {selector:'body',style:"background: -webkit-gradient(radial, 48% 30%, 0, 48% 30%, 350, from(rgba(0,0,255,0)), to(rgba(0,0,0,1)));color:#e0e0ff;font-size:115%;margin:0;"},
+        {selector:'body',style:"background:rgba(0,0,0,0);margin:0;padding:0;"},
+        {selector:'#wrapper',style:"width:100%;height:100%;background:-webkit-gradient(radial, 48% 30%, 0, 48% 30%, 350, from(rgba(0,0,255,0)), to(rgba(0,0,0,1)));margin:0;padding:0;"},
         {selector:'#container',style:"position: absolute;left: 45%; margin-left:-100px;top: 35%; margin-top:-100px;height: 200px;width: 200px;-webkit-perspective: 800;"},
-        {selector:'#frame',style:"opacity: 0.7;width: 200px;-webkit-transform-style: preserve-3d;-webkit-transform: translateZ(150px);-webkit-transition: all 0.5s linear;"},
+        {selector:'#frame',style:"opacity: 1.0;width: 200px;-webkit-transform-style: preserve-3d;-webkit-transform: translateZ(150px);-webkit-transition: all 0.5s linear;"},
         {selector:'.inner',style:"height:200px;width:200px;-webkit-transform-style: preserve-3d;-webkit-transform: rotateY(230deg);"},
         {selector:'.inner div',style:"position: absolute;height:200px;width:200px;background-size: 100% 100%;opacity: 1;-webkit-transform: rotateX(-90deg);"},
         {selector:'.inner .e',style:"top:100px;font-size:80px;"},
@@ -491,6 +550,12 @@ log.Logger.debug(this,'publishing '+@choice);
         {selector:'@-webkit-keyframes spin2',style:"from { -webkit-transform: rotateY(0); } to   { -webkit-transform: rotateY(720deg); }"}
       ];
       monads.Styleable(styles).on("load").onstyle();
+      var moonrising = {selector:'@-webkit-keyframes moonrising',style:""}, arc;
+      for(var i = 0; i < 100; ++i) {
+        arc = 100.0 - parseFloat(i)/100.0*70.0;
+        moonrising.style += i + "% { background: -webkit-gradient(radial, 48% "+arc+"%, 0, 48% "+arc+"%, 350, from(rgba(0,0,255,0)), to(rgba(0,0,0,1))); } "; 
+      }
+      monads.Styleable([moonrising]).on("load").onstyle();
     })()
   }
 
