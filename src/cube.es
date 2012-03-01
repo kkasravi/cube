@@ -8,9 +8,20 @@ module cube {
   class NumberGenerator {
     constructor(number) {
       private element;
+      this.onplay = this.onplay.bind(this);
       @element = monads.DOMable({tagName:'div'}).on('load').text(number);
+      controller.Controller.subscribe('play',this.onplay);
       return @element;
     }
+    onplay(event) {
+      monads.DOMable({tagName:'div'}).on('load').attributes({'class':'numbers'}).text('8 \\u00f7  9 \\u003d').insert(document.body).place('center');
+    }
+    static init = (function() {
+      var styles = [
+        {selector:'.numbers',style:"position:absolute;width:200px;height:200px;white-space:nowrap;color:white;font-family:maagkramp;font-size:200px;font-weight:normal;"}
+      ];
+      monads.Styleable(styles).on("load").onstyle();
+    })()
   }
 
   class Title {
@@ -29,7 +40,7 @@ module cube {
       this.ontouchend = this.ontouchend.bind(this);
       @choice = null;
       @play = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transition':'-webkit-transform 400ms linear','-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) rotateZ(0deg) scale(3.0)','white-space':'nowrap','height':'60px','width':'60px','color':'#e97825','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
-      @play.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
+      @play.on(['touchend','click'],this.ontouchend);
       controller.Controller.subscribe('choose',this.onchoose);
       return @play;
     }
@@ -134,7 +145,7 @@ module cube {
           end().
         end().svg
       );
-      @element.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
+      @element.on(['touchend','click'],this.ontouchend);
       return @element;
     }
     onchoose(event) {
@@ -238,7 +249,7 @@ module cube {
           end().
         end().svg
       );
-      @element.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
+      @element.on(['touchend','click'],this.ontouchend);
       return @element;
     }
     onchoose(event) {
@@ -337,7 +348,7 @@ module cube {
           end().
         end().svg
       );
-      @element.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
+      @element.on(['touchend','click'],this.ontouchend);
       return @element;
     }
     onchoose(event) {
@@ -436,7 +447,7 @@ module cube {
           end().
         end().svg
       );
-      @element.on('touchend').bind(this.ontouchend).on('click').bind(this.ontouchend);
+      @element.on(['touchend','click'],this.ontouchend);
       return @element;
     }
     onchoose(event) {
@@ -501,8 +512,9 @@ module cube {
       );
       @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(@frame);
       @wrapper = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'wrapper'}).insert(document.body).add(@container);
-      monads.DOMable({element:document.body}).on('touchstart').bind(this.ontouchstart).on('touchmove').bind(this.ontouchmove).on('touchend').bind(this.ontouchend);
+      monads.DOMable({element:document.body}).on('touchstart',this.ontouchstart).on('touchmove',this.ontouchmove).on('touchend',this.ontouchend);
       @wrapper.style({'-webkit-animation':'moonrising 2s 1'});
+      NumberGenerator();
     }
     onplay(event) {
       @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
