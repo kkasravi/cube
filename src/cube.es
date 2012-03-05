@@ -4,25 +4,7 @@ module cube {
   module controller from 'controller';
   module events from 'events';
   module svg from 'svg';
-
-  class NumberGenerator {
-    constructor(number) {
-      private element;
-      this.onplay = this.onplay.bind(this);
-      @element = monads.DOMable({tagName:'div'}).on('load').text(number);
-      controller.Controller.subscribe('play',this.onplay);
-      return @element;
-    }
-    onplay(event) {
-      monads.DOMable({tagName:'div'}).on('load').attributes({'class':'numbers'}).text('8 \\u00f7  9 \\u003d').insert(document.body).place('center');
-    }
-    static init = (function() {
-      var styles = [
-        {selector:'.numbers',style:"position:absolute;width:200px;height:200px;white-space:nowrap;color:white;font-family:maagkramp;font-size:200px;font-weight:normal;"}
-      ];
-      monads.Styleable(styles).on("load").onstyle();
-    })()
-  }
+  module numbers from 'numbers';
 
   class Title {
     constructor() {
@@ -55,13 +37,16 @@ module cube {
 
   class Difficulty {
     constructor() {
-      private difficulty;
+      private difficulty, easy, hard, selected;
+      @easy = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Easy');
+      @hard = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(200px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Hard')
+      @selected =  monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-70px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
       @difficulty = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg)','-webkit-transition':'-webkit-transform 400ms linear'}).add(
-        monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-70px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794')
+        @selected
       ).add(
-        monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Easy')
+        @easy
       ).add(
-        monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(200px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Hard')
+        @hard
       );
       return @difficulty;
     }
@@ -476,7 +461,7 @@ module cube {
 
   class Main {
     constructor() {
-      private container, difficulty, divide, frame, minus, multiply, play, plus, title, wrapper;
+      private container, difficulty, divide, frame, minus, multiply, numbers, play, plus, title;
       this.ontouchstart = this.ontouchstart.bind(this);
       this.ontouchmove = this.ontouchmove.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
@@ -510,11 +495,8 @@ module cube {
           @difficulty
         )
       );
-      @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(@frame);
-      @wrapper = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'wrapper'}).insert(document.body).add(@container);
+      @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(@frame).insert(document.body);
       monads.DOMable({element:document.body}).on('touchstart',this.ontouchstart).on('touchmove',this.ontouchmove).on('touchend',this.ontouchend);
-      @wrapper.style({'-webkit-animation':'moonrising 2s 1'});
-      NumberGenerator();
     }
     onplay(event) {
       @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
@@ -524,6 +506,7 @@ module cube {
       @divide.style({'-webkit-transform':'rotateY(213deg) translateX(40px) translateZ(80px)'});
       @plus.style({'-webkit-transform':'rotateY(90deg) translateX(206px) translateZ(300px) rotateY(-70.5deg)'});
       @difficulty.style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg) rotateX(110deg)'});
+      @numbers = numbers.Sections({sets:[['0','1','2','3','4','5','6','7','8','9'],['\\u002D','\\u00D7','\\u00F7','\\u002B'],['0','1','2','3','4','5','6','7','8','9'],['\\u003D','\\u003D'],['10','20','30']]}).style({'font-family':'maagkramp'}).textShadow(Main.shadow);
     }
     ontouchstart(event) {
       event.preventDefault();
@@ -550,24 +533,24 @@ module cube {
     ]
     static init = (function() {
       var styles = [
-        {selector:'body',style:"background:rgba(0,0,0,0);margin:0;padding:0;"},
-        {selector:'#wrapper',style:"width:100%;height:100%;background:-webkit-gradient(radial, 48% 30%, 0, 48% 30%, 350, from(rgba(0,0,255,0)), to(rgba(0,0,0,1)));margin:0;padding:0;"},
-        {selector:'#container',style:"position: absolute;left: 45%; margin-left:-100px;top: 35%; margin-top:-100px;height: 200px;width: 200px;-webkit-perspective: 800;"},
+        {selector:'body',style:"background:-webkit-gradient(radial, 48% 30%, 0, 48% 30%, 350, from(rgba(0,0,255,0)), to(rgba(0,0,0,1)));margin:0;padding:0;"},
+        {selector:'#container',style:"position:absolute;left:45%;margin-left:-100px;top:35%;margin-top:-100px;height:200px;width:200px;-webkit-perspective:800;"},
         {selector:'#frame',style:"opacity: 1.0;width: 200px;-webkit-transform-style: preserve-3d;-webkit-transform: translateZ(150px);-webkit-transition: all 0.5s linear;"},
         {selector:'.inner',style:"height:200px;width:200px;-webkit-transform-style: preserve-3d;-webkit-transform: rotateY(230deg);"},
         {selector:'.inner div',style:"position: absolute;height:200px;width:200px;background-size: 100% 100%;opacity: 1;-webkit-transform: rotateX(-90deg);"},
         {selector:'.inner .e',style:"top:100px;font-size:80px;"},
         {selector:'.inner .f',style:"top:-100px;"},
-        {selector:'@font-face',style:'font-family:maagkramp;src:url(/cube/lib/maagkramp.ttf);'},
-        {selector:'@-webkit-keyframes spin2',style:"from { -webkit-transform: rotateY(0); } to   { -webkit-transform: rotateY(720deg); }"}
+        {selector:'@font-face',style:'font-family:maagkramp;src:url(/cube/lib/maagkramp.ttf);'}
       ];
       monads.Styleable(styles).on("load").onstyle();
+/*
       var moonrising = {selector:'@-webkit-keyframes moonrising',style:""}, arc;
       for(var i = 0; i < 100; ++i) {
         arc = 100.0 - parseFloat(i)/100.0*70.0;
-        moonrising.style += i + "% { background: -webkit-gradient(radial, 48% "+arc+"%, 0, 48% "+arc+"%, 350, from(rgba(0,0,255,0)), to(rgba(0,0,0,1))); } "; 
+        moonrising.style += i + "% { -webkit-transform: translate3d(0,"+arc+"%,0); } "; 
       }
       monads.Styleable([moonrising]).on("load").onstyle();
+*/
     })()
   }
 
