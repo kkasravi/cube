@@ -37,18 +37,33 @@ module cube {
 
   class Difficulty {
     constructor() {
-      private difficulty, easy, hard, selected;
-      @easy = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Easy');
-      @hard = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(200px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Hard')
-      @selected =  monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-70px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
+      private difficulty, easy, easyarrow, hard, hardarrow;
+      this.oneasy = this.oneasy.bind(this);
+      this.onhard = this.onhard.bind(this);
+      @easy = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Easy').on(['click','touchend'],this.oneasy);
+      @hard = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(220px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Hard').on(['click','touchend'],this.onhard);
+      @easyarrow =  monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-60px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
+      @hardarrow =  monads.DOMable({tagName:'div'}).on('load').style({'display':'none','-webkit-transform':'translateX(160px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
       @difficulty = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg)','-webkit-transition':'-webkit-transform 400ms linear'}).add(
-        @selected
+        @easyarrow
       ).add(
         @easy
+      ).add(
+        @hardarrow
       ).add(
         @hard
       );
       return @difficulty;
+    }
+    oneasy(event) {
+      @easyarrow.style({'display':'block'});
+      @hardarrow.style({'display':'none'});
+      controller.Controller.publish(events.CustomEvent({type:'difficulty',canBubble:false,isCanceleable:true,detail:'easy'}));
+    }
+    onhard(event) {
+      @easyarrow.style({'display':'none'});
+      @hardarrow.style({'display':'block'});
+      controller.Controller.publish(events.CustomEvent({type:'difficulty',canBubble:false,isCanceleable:true,detail:'hard'}));
     }
   }
 
@@ -147,7 +162,7 @@ module cube {
       }
     }
     ontouchend(event) {
-      controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:'multiply'}));
+      controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:{'operation':'multiply','color':'#e97825'}}));
     }
     static init = (function() {
       var styles = [
@@ -251,7 +266,7 @@ module cube {
       }
     }
     ontouchend(event) {
-      controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:'plus'}));
+      controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:{'operation':'plus','color':'#78bf2b'}}));
     }
     static init = (function() {
       var styles = [
@@ -337,7 +352,7 @@ module cube {
       return @element;
     }
     onchoose(event) {
-      var choice = event.detail;
+      var choice = event.detail.operation;
       if(choice === 'divide') {
         if(!@selected) {
           @selected = true;
@@ -350,7 +365,7 @@ module cube {
       }
     }
     ontouchend(event) {
-      controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:'divide'}));
+      controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:{'operation':'divide','color':'#27a7e5'}}));
     }
     static init = (function() {
       var styles = [
@@ -436,7 +451,7 @@ module cube {
       return @element;
     }
     onchoose(event) {
-      var choice = event.detail;
+      var choice = event.detail.operation;
       if(choice === 'minus') {
         if(!@selected) {
           @selected = true;
@@ -449,7 +464,7 @@ module cube {
       }
     }
     ontouchend(event) {
-      controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:'minus'}));
+      controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:{'operation':'minus','color':'#90969d'}}));
     }
     static init = (function() {
       var styles = [
@@ -499,6 +514,7 @@ module cube {
       monads.DOMable({element:document.body}).on('touchstart',this.ontouchstart).on('touchmove',this.ontouchmove).on('touchend',this.ontouchend);
     }
     onplay(event) {
+      var color = event.detail.color;
       @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
       @play.style({'-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) scale(3.0)'});
       @minus.style({'-webkit-transform':'rotateY(49deg) translateX(120px) translateY(-10px) translateZ(100px)'});
@@ -506,7 +522,9 @@ module cube {
       @divide.style({'-webkit-transform':'rotateY(213deg) translateX(40px) translateZ(80px)'});
       @plus.style({'-webkit-transform':'rotateY(90deg) translateX(206px) translateZ(300px) rotateY(-70.5deg)'});
       @difficulty.style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg) rotateX(110deg)'});
-      @numbers = numbers.Sections({sets:[['0','1','2','3','4','5','6','7','8','9'],['\\u002D','\\u00D7','\\u00F7','\\u002B'],['0','1','2','3','4','5','6','7','8','9'],['\\u003D','\\u003D'],['10','20','30']]}).style({'font-family':'maagkramp'}).textShadow(Main.shadow);
+      @numbers = numbers.Sections({sets:[['0','1','2','3','4','5','6','7','8','9'],['\\u002D','\\u00D7','\\u00F7','\\u002B'],['0','1','2','3','4','5','6','7','8','9'],['\\u003D','\\u003D'],['?','0','10']]}).style({'font-family':'maagkramp','color':color}).textShadow(Main.shadow);
+log.Logger.debug(this,'color='+color);
+      monads.Styleable([{selector:'.sections > .section > .numbers > .field',style:"color:"+color+";"}]).on("load").onstyle();
     }
     ontouchstart(event) {
       event.preventDefault();
@@ -540,17 +558,12 @@ module cube {
         {selector:'.inner div',style:"position: absolute;height:200px;width:200px;background-size: 100% 100%;opacity: 1;-webkit-transform: rotateX(-90deg);"},
         {selector:'.inner .e',style:"top:100px;font-size:80px;"},
         {selector:'.inner .f',style:"top:-100px;"},
+        {selector:'.inner .f',style:"top:-100px;"},
+        {selector:'.sections > .section',style:"border:0;width:130px;"},
+        {selector:'.sections > .section > .numbers > .field',style:"font-size:8em;background:rgba(0,0,0,0);border:0;width:auto;"},
         {selector:'@font-face',style:'font-family:maagkramp;src:url(/cube/lib/maagkramp.ttf);'}
       ];
       monads.Styleable(styles).on("load").onstyle();
-/*
-      var moonrising = {selector:'@-webkit-keyframes moonrising',style:""}, arc;
-      for(var i = 0; i < 100; ++i) {
-        arc = 100.0 - parseFloat(i)/100.0*70.0;
-        moonrising.style += i + "% { -webkit-transform: translate3d(0,"+arc+"%,0); } "; 
-      }
-      monads.Styleable([moonrising]).on("load").onstyle();
-*/
     })()
   }
 
