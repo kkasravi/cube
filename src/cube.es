@@ -149,7 +149,7 @@ module cube {
       return @element;
     }
     onchoose(event) {
-      var choice = event.detail;
+      var choice = event.detail.operation;
       if(choice === 'multiply') {
         if(!@selected) {
           @selected = true;
@@ -253,7 +253,7 @@ module cube {
       return @element;
     }
     onchoose(event) {
-      var choice = event.detail;
+      var choice = event.detail.operation;
       if(choice === 'plus') {
         if(!@selected) {
           @selected = true;
