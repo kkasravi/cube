@@ -17,7 +17,7 @@ module cube {
   class Correct {
     constructor() {
       private correct;
-      @correct = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'5%','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'maagkramp','font-size':'100px','-webkit-transform':'translateX(0px) translateY(-300px) rotateY(0deg) rotateX(0deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text(' ').insert(document.body);
+      @correct = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'5%','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'maagkramp','font-size':'100px','-webkit-transform':'translateY(200%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text(' ').insert(document.body);
       return @correct;
     }
   }
@@ -75,14 +75,15 @@ module cube {
     constructor() {
       private correct, element, next;
       this.onnext = this.onnext.bind(this);
-      @next = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'8em'}).textShadow(Main.shadow).text('Next').on(['click','touchend'],this.onnext);
-      @element = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(50%) translateY(30px)','-webkit-transition':'-webkit-transform 400ms linear'}).add(
+      @next = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'8em'}).textShadow(Main.shadow).text('\\u2794').on(['click','touchend'],this.onnext);
+      @element = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(60%) translateY(30px)','-webkit-transition':'-webkit-transform 400ms linear'}).add(
         @next
       ).insert(document.body);
       @next.on(['touchend','click'],this.onnext);
       @correct = Correct();
     }
     onnext(event) {
+log.Logger.debug(this,'Next.onnext');
       @correct.style({'color':'green'}).updateText('\\u2714');
       //@correct.style({'color':'red'}).updateText('\\u2718');
     }
@@ -539,9 +540,46 @@ module cube {
       monads.Styleable(styles).on("load").onstyle();
     })()
   }
+  class Equation {
+    constructor(properties={}) {
+      private sections;
+      this.onnext = this.onnext.bind(this);
+      @operation = properties.operation;
+      @sections = @equation;
+      @sections.element.style({'font-family':'maagkramp','color':properties.color}).textShadow(Main.shadow);
+      monads.Styleable([{selector:'.sections > .section > .numbers > .field',style:"color:"+properties.color+";"}]).on("load").onstyle();
+      @sections.sections[4].element.on(['touchend','click'],this.onnext);
+    }
+    get equation() {
+      switch(@operation) {
+        case 'minus':
+          return numbers.Sections({sets:[['99','4','9','1'],['\\u002D','\\u002D','\\u002D'],['22','8','3','9'],['\\u003D','\\u003D'],['77','84','70']]});
+          break;
+        case 'multiply':
+          return numbers.Sections({sets:[['12','4','9','1'],['\\u00D7','\\u00D7','\\u00D7'],['3','8','3','9'],['\\u003D','\\u003D'],['36','40','29']]});
+          break;
+        case 'divide':
+          return numbers.Sections({sets:[['24','4','9','1'],['\\u00F7','\\u00F7','\\u00F7'],['3','8','3','9'],['\\u003D','\\u003D'],['8','10','6']]});
+          break;
+        case 'plus':
+          return numbers.Sections({sets:[['19','4','9','1'],['\\u002B','\\u002B','\\u002B'],['11','8','3','9'],['\\u003D','\\u003D'],['30','33','36']]});
+          break;
+      }
+    }
+    onnext() {
+      @sections && @sections.sections && @sections.sections[4].numbers.next();
+    }
+    static init = (function() {
+      var styles = [
+        {selector:'.sections > .section',style:"border:0;width:180px;"},
+        {selector:'.sections > .section > .numbers > .field',style:"font-size:8em;background:rgba(0,0,0,0);border:0;width:auto;"}
+      ];
+      monads.Styleable(styles).on("load").onstyle();
+    })()
+  }
   class Main {
     constructor() {
-      private container, difficulty, divide, frame, minus, multiply, sections, play, plus, shuriken, title;
+      private container, difficulty, divide, frame, minus, multiply, equation, play, plus, shuriken, title;
       this.ontouchstart = this.ontouchstart.bind(this);
       this.ontouchmove = this.ontouchmove.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
@@ -583,7 +621,7 @@ module cube {
       monads.DOMable({element:document.body}).on('touchstart',this.ontouchstart).on('touchmove',this.ontouchmove).on(['touchend','click'],this.ontouchend);
     }
     onplay(event) {
-      var color = event.detail.color;
+      var color = event.detail.color, operation = event.detail.operation;
       @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
       @play.style({'-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) scale(3.0)'});
       @minus.style({'-webkit-transform':'rotateY(49deg) translateX(120px) translateY(-10px) translateZ(100px)'});
@@ -591,10 +629,8 @@ module cube {
       @divide.style({'-webkit-transform':'rotateY(213deg) translateX(40px) translateZ(80px)'});
       @plus.style({'-webkit-transform':'rotateY(90deg) translateX(206px) translateZ(300px) rotateY(-70.5deg)'});
       @difficulty.style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg) rotateX(110deg)'});
-      @sections = numbers.Sections({sets:[['0','1','2','3','4','5','6','7','8','9'],['\\u002D','\\u00D7','\\u00F7','\\u002B'],['0','1','2','3','4','5','6','7','8','9'],['\\u003D','\\u003D'],['?','0','10']]});
-      @sections.element.style({'font-family':'maagkramp','color':color}).textShadow(Main.shadow);
       Next();
-      monads.Styleable([{selector:'.sections > .section > .numbers > .field',style:"color:"+color+";"}]).on("load").onstyle();
+      Equation({operation:operation,color:color});
     }
     ontouchstart(event) {
       event.preventDefault();
@@ -603,7 +639,6 @@ module cube {
       event.preventDefault();
     }
     ontouchend(event) {
-      @sections && @sections.sections && @sections.sections[4].numbers.next();
       event.preventDefault();
     }
     static shadow = [
@@ -630,8 +665,6 @@ module cube {
         {selector:'.inner .e',style:"top:100px;font-size:80px;"},
         {selector:'.inner .f',style:"top:-100px;"},
         {selector:'.inner .f',style:"top:-100px;"},
-        {selector:'.sections > .section',style:"border:0;width:140px;"},
-        {selector:'.sections > .section > .numbers > .field',style:"font-size:8em;background:rgba(0,0,0,0);border:0;width:auto;"},
         {selector:'@font-face',style:'font-family:maagkramp;src:url(/cube/lib/maagkramp.ttf);'}
       ];
       monads.Styleable(styles).on("load").onstyle();
