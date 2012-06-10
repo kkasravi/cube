@@ -5,20 +5,142 @@ module cube {
   module events from 'events';
   module svg from 'svg';
   module numbers from 'numbers';
+  module canvas from 'canvas';
 
+  class CountDownTimer {
+    constructor(properties={initialX:20,initialY:20,totalWidth:300,totalHeight:34}) {
+      private i, container, context, initialX, initialY, progressGradient, radius, stage, totalWidth, totalHeight;
+      @tick = @tick.bind(this);
+      @totalWidth = properties.totalWidth||300;
+      @totalHeight = properties.totalHeight||34;
+      @initialX = properties.initialX||20;
+      @initialY = properties.initialY||20;
+      @radius = @totalHeight/2;
+      @element = monads.DOMable({tagName:'canvas'}).on('load').attributes({'id':'countdowntimer',width:document.documentElement.clientWidth,height:'680'}).style({'position':'absolute','top':'0','left':'0','background-color':'transparent'}).insert(document.body).element();
+      @context = @element.getContext('2d');
+      @progressGradient = @context.createLinearGradient(0,@initialY+@totalHeight,0,0);
+      @progressGradient.addColorStop(0, '#4DA4F3');
+      @progressGradient.addColorStop(0.4, '#ADD9FF');
+      @progressGradient.addColorStop(1, '#9ED1FF');
+      @start();
+    }
+    tick() {
+      @i--;
+      if(@i >= 0) {
+        @progressLayerRect(@context, @initialX, @initialY, @totalWidth, @totalHeight, @radius);
+        @progressBarRect(@context, @initialX, @initialY, @i, @totalHeight, @radius, @totalWidth);
+        @progressText(@context, @initialX, @initialY, @i, @totalHeight, @radius, @totalWidth);
+      } else {
+        canvas.Ticker.stop();
+        controller.Controller.publish(events.CustomEvent({type:'timeout',canBubble:false,isCanceleable:true}));
+      }
+    }
+    roundRect() {
+      @context.beginPath();
+      @context.moveTo(@initialX + @radius, @initialY);
+      @context.lineTo(@initialX + @totalWidth - @radius, @initialY);
+      @context.arc(@initialX+@totalWidth-@radius, @initialY+@radius, @radius, -Math.PI/2, Math.PI/2, false);
+      @context.lineTo(@initialX + @radius, @initialY + @totalHeight);
+      @context.arc(@initialX+@radius, @initialY+@radius, @radius, Math.PI/2, 3*Math.PI/2, false);
+      @context.closePath();
+      @context.fill();
+    }
+    progressLayerRect(ctx, x, y, width, height, radius, shadow) {
+        ctx.save();
+        if(shadow) {
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+          ctx.shadowBlur = 0;
+          ctx.shadowColor = '#666';
+        }
+        ctx.fillStyle = 'rgba(189,189,189,1)';
+        @roundRect();
+        // Overlay with gradient
+        ctx.shadowColor = 'rgba(0,0,0,0)'
+        var lingrad = ctx.createLinearGradient(0,y+height,0,0);
+        lingrad.addColorStop(0, 'rgba(255,255,255, 0.1)');
+        lingrad.addColorStop(0.4, 'rgba(255,255,255, 0.7)');
+        lingrad.addColorStop(1, 'rgba(255,255,255,0.4)');
+        ctx.fillStyle = lingrad;
+        @roundRect();
+        ctx.fillStyle = 'white';
+        ctx.restore();
+    }
+    progressBarRect(ctx, x, y, width, height, radius, max) {
+        // var to store offset for proper filling when inside rounded area
+        var offset = 0;
+        ctx.beginPath();
+        if (width<radius) {
+            offset = radius - Math.sqrt(Math.pow(radius,2)-Math.pow((radius-width),2));
+            ctx.moveTo(x + width, y+offset);
+            ctx.lineTo(x + width, y+height-offset);
+            ctx.arc(x + radius, y + radius, radius, Math.PI - Math.acos((radius - width) / radius), Math.PI + Math.acos((radius - width) / radius), false);
+        }
+        else if (width+radius>max) {
+            offset = radius - Math.sqrt(Math.pow(radius,2)-Math.pow((radius - (max-width)),2));
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width, y);
+            ctx.arc(x+max-radius, y + radius, radius, -Math.PI/2, -Math.acos((radius - (max-width)) / radius), false);
+            ctx.lineTo(x + width, y+height-offset);
+            ctx.arc(x+max-radius, y + radius, radius, Math.acos((radius - (max-width)) / radius), Math.PI/2, false);
+            ctx.lineTo(x + radius, y + height);
+            ctx.arc(x+radius, y+radius, radius, Math.PI/2, 3*Math.PI/2, false);
+        }
+        else {
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width, y);
+            ctx.lineTo(x + width, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.arc(x+radius, y+radius, radius, Math.PI/2, 3*Math.PI/2, false);
+        }
+        ctx.closePath();
+        ctx.fill();
+  
+        // draw progress bar right border shadow
+        if (width<max-1) {
+            ctx.save();
+            ctx.shadowOffsetX = 1;
+            ctx.shadowBlur = 1;
+            ctx.shadowColor = '#666';
+            if (width+radius>max)
+              offset = offset+1;
+            ctx.fillRect(x+width,y+offset,1,@totalHeight-offset*2);
+            ctx.restore();
+        }
+    }
+    progressText(ctx, x, y, width, height, radius, max) {
+        ctx.save();
+        ctx.fillStyle = 'white';
+        ctx.font = "20pt Bender";
+        var text = Math.floor(width/max*100)+"%";
+        var text_width = ctx.measureText(text).width;
+        var text_x = x+width-text_width-radius/2;
+        if (width<=radius+text_width) {
+            text_x = x+radius/2;
+        }
+        ctx.fillText(text, text_x, y+22);
+        ctx.restore();
+    }
+    start() {
+      @i = @totalWidth;
+      @context.fillStyle = @progressGradient;
+      canvas.Ticker.addListener(this);
+      canvas.Ticker.setFPS(30);
+    }
+  }
   class Title {
     constructor() {
       private title;
-      @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','width':'420px','color':'#e97825','font-family':'maagkramp','font-size':'80px','-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('Ninja Math');
-      @title.delay(@title.style,[{'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(0deg)'}],300);
+      @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','width':'420px','color':'#e97825','font-family':'Bender','font-size':'80px','-webkit-transform':'translateX(-220px) translateY(-120px) rotateY(-230deg) rotateX(76deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('Ninja Math');
+      @title.delay(@title.style,[{'-webkit-transform':'translateX(-220px) translateY(-120px) rotateY(-230deg) rotateX(0deg)'}],300);
       return @title;
     }
   }
-  class Correct {
+  class Checker {
     constructor() {
-      private correct;
-      @correct = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'5%','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'maagkramp','font-size':'100px','-webkit-transform':'translateY(280%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text(' ').insert(document.body);
-      return @correct;
+      private checker;
+      @checker = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'20%','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Bender','font-size':'100px','-webkit-transform':'translateY(20%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text(' ').insert(document.body);
+      return @checker;
     }
   }
   class Play {
@@ -27,7 +149,7 @@ module cube {
       this.onchoose = this.onchoose.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
       @choice = null;
-      @play = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transition':'-webkit-transform 400ms linear','-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) rotateZ(0deg) scale(3.0)','white-space':'nowrap','height':'60px','width':'60px','color':'#e97825','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
+      @play = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transition':'-webkit-transform 400ms linear','-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) rotateZ(0deg) scale(3.0)','white-space':'nowrap','height':'60px','width':'60px','color':'#e97825','font-family':'Bender','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
       @play.on(['touchend','click'],this.ontouchend);
       controller.Controller.subscribe('choose',this.onchoose);
       return @play;
@@ -45,10 +167,10 @@ module cube {
       private difficulty, easy, easyarrow, hard, hardarrow;
       this.oneasy = this.oneasy.bind(this);
       this.onhard = this.onhard.bind(this);
-      @easy = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Easy').on(['click','touchend'],this.oneasy);
-      @hard = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(220px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('Hard').on(['click','touchend'],this.onhard);
-      @easyarrow =  monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-60px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
-      @hardarrow =  monads.DOMable({tagName:'div'}).on('load').style({'display':'none','-webkit-transform':'translateX(160px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
+      @easy = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Bender','font-size':'60px'}).textShadow(Main.shadow).text('Easy').on(['click','touchend'],this.oneasy);
+      @hard = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(220px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Bender','font-size':'60px'}).textShadow(Main.shadow).text('Hard').on(['click','touchend'],this.onhard);
+      @easyarrow =  monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-60px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Bender','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
+      @hardarrow =  monads.DOMable({tagName:'div'}).on('load').style({'display':'none','-webkit-transform':'translateX(160px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Bender','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
       @difficulty = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg)','-webkit-transition':'-webkit-transform 400ms linear'}).add(
         @easyarrow
       ).add(
@@ -75,7 +197,7 @@ module cube {
     constructor() {
       private element, next;
       this.onnext = this.onnext.bind(this);
-      @next = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'maagkramp','font-size':'8em'}).textShadow(Main.shadow).text('\\u2794').on(['click','touchend'],this.onnext);
+      @next = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Bender','font-size':'8em'}).textShadow(Main.shadow).text('\\u2794').on(['click','touchend'],this.onnext);
       @element = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(60%) translateY(30px)','-webkit-transition':'-webkit-transform 400ms linear'}).add(
         @next
       ).insert(document.body);
@@ -90,8 +212,8 @@ module cube {
       private element, id, selected;
       @id = Math.uuid(8);
       @selected = false;
-      this.onchoose = this.onchoose.bind(this);
-      this.ontouchend = this.ontouchend.bind(this);
+      @onchoose = @onchoose.bind(this);
+      @ontouchend = @ontouchend.bind(this);
       controller.Controller.subscribe('choose',this.onchoose);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'multiply'}).add(
         svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"200.0",height:"200.0"}).
@@ -537,62 +659,26 @@ module cube {
       monads.Styleable(styles).on("load").onstyle();
     })()
   }
-  class Equation {
-    constructor(properties={}) {
-      private sections;
-      this.onnext = this.onnext.bind(this);
-      @operation = properties.operation;
-      @sections = @equation;
-      @sections.element.style({'font-family':'maagkramp','color':properties.color}).textShadow(Main.shadow);
-      monads.Styleable([{selector:'.sections > .section > .numbers > .field',style:"color:"+properties.color+";"}]).on("load").onstyle();
-      @sections.sections[4].element.on(['touchend','click'],this.onnext);
-    }
-    get equation() {
-      switch(@operation) {
-        case 'minus':
-          return numbers.Sections({sets:[['99','4','9','1'],['\\u002D','\\u002D','\\u002D'],['22','8','3','9'],['\\u003D','\\u003D'],['77','84','70']]});
-          break;
-        case 'multiply':
-          return numbers.Sections({sets:[['12','4','9','1'],['\\u00D7','\\u00D7','\\u00D7'],['3','8','3','9'],['\\u003D','\\u003D'],['36','40','29']]});
-          break;
-        case 'divide':
-          return numbers.Sections({sets:[['24','4','9','1'],['\\u00F7','\\u00F7','\\u00F7'],['3','8','3','9'],['\\u003D','\\u003D'],['8','10','6']]});
-          break;
-        case 'plus':
-          return numbers.Sections({sets:[['19','4','9','1'],['\\u002B','\\u002B','\\u002B'],['11','8','3','9'],['\\u003D','\\u003D'],['30','33','36','39']]});
-          break;
-      }
-    }
-    onnext() {
-      @sections && @sections.sections && @sections.sections[4].numbers.next();
-    }
-    static init = (function() {
-      var styles = [
-        {selector:'.sections > .section',style:"border:0;width:180px;"},
-        {selector:'.sections > .section > .numbers > .field',style:"font-size:8em;background:rgba(0,0,0,0);border:0;width:auto;"}
-      ];
-      monads.Styleable(styles).on("load").onstyle();
-    })()
-  }
   class Main {
     constructor() {
-      private container, correct, difficulty, divide, frame, level, minus, multiply, equation, play, plus, shuriken, title;
+      private container, checker, color, difficulty, divide, frame, level, minus, multiply, equation, operation, problems, play, plus, shuriken, timer, title;
       this.ontouchstart = this.ontouchstart.bind(this);
       this.ontouchmove = this.ontouchmove.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
-      this.onnext = this.onnext.bind(this);
+      this.ontimeout = this.ontimeout.bind(this);
       this.onplay = this.onplay.bind(this);
       this.ondifficulty = this.ondifficulty.bind(this);
-      controller.Controller.subscribe('next',this.onnext);
+      controller.Controller.subscribe('timeout',this.ontimeout);
       controller.Controller.subscribe('play',this.onplay);
       controller.Controller.subscribe('difficulty',this.ondifficulty);
       @level = 'easy';
       @title = Title();
-      @correct = Correct();
+      @checker = Checker();
       @difficulty = Difficulty();
       @minus = Minus();
       @play = Play();
       @plus = Plus();
+      @problems = [];
       @divide = Divide();
       @multiply = Multiply();
       @shuriken = Shuriken();
@@ -617,21 +703,15 @@ module cube {
           @difficulty
         )
       );
-      @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(
-        @frame
-      ).insert(document.body);
-      @shuriken.insert(document.body);
+      @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(@frame).insert(document.body);
+//      @shuriken.insert(document.body);
       monads.DOMable({element:document.body}).on('touchstart',this.ontouchstart).on('touchmove',this.ontouchmove).on(['touchend','click'],this.ontouchend);
     }
     ondifficulty(event) {
       @level = event.detail;
     }
-    onnext(event) {
-      //@correct.style({'color':'green'}).updateText('\\u2714');
-      @correct.style({'color':'red'}).updateText('\\u2718');
-    }
     onplay(event) {
-      var color = event.detail.color, operation = event.detail.operation;
+      @color = event.detail.color, @operation = event.detail.operation;
       @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
       @play.style({'-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) scale(3.0)'});
       @minus.style({'-webkit-transform':'rotateY(49deg) translateX(120px) translateY(-10px) translateZ(100px)'});
@@ -639,8 +719,17 @@ module cube {
       @divide.style({'-webkit-transform':'rotateY(213deg) translateX(40px) translateZ(80px)'});
       @plus.style({'-webkit-transform':'rotateY(90deg) translateX(206px) translateZ(300px) rotateY(-70.5deg)'});
       @difficulty.style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg) rotateX(110deg)'});
-      Next();
-      Equation({operation:operation,level:@level,color:color});
+      @timer = CountDownTimer({initialX:document.documentElement.clientWidth*0.4,initialY:50});
+      @equation = numbers.Equation({operation:@operation,level:@level,color:@color});
+      @problems.push(@equation);
+    }
+    ontimeout(event) {
+      var answer = @equation.answer();
+      var guess = @equation.guess();
+      answer === guess ? @checker.style({'color':'green'}).updateText('\\u2714'): @checker.style({'color':'red'}).updateText('\\u2718');
+      @equation = Equation({operation:@operation,level:@level,color:@color});
+      @problems.push(@equation);
+      @timer.start();
     }
     ontouchstart(event) {
       event.preventDefault();
@@ -667,6 +756,7 @@ module cube {
     ]
     static init = (function() {
       var styles = [
+        {selector:'@font-face',style:'font-family:Bender;src:url(/cube/lib/Bender-Solid.otf);'},
         {selector:'body',style:"background:-webkit-gradient(radial, 48% 30%, 0, 48% 30%, 350, from(rgba(0,0,255,0)), to(rgba(0,0,0,1)));margin:0;padding:0;"},
         {selector:'#container',style:"position:absolute;left:45%;margin-left:-100px;top:35%;margin-top:-100px;height:200px;width:200px;-webkit-perspective:800;"},
         {selector:'#frame',style:"opacity: 1.0;width: 200px;-webkit-transform-style: preserve-3d;-webkit-transform: translateZ(150px);-webkit-transition: all 0.5s linear;"},
@@ -674,8 +764,7 @@ module cube {
         {selector:'.inner div',style:"position: absolute;height:200px;width:200px;background-size: 100% 100%;opacity: 1;-webkit-transform: rotateX(-90deg);"},
         {selector:'.inner .e',style:"top:100px;font-size:80px;"},
         {selector:'.inner .f',style:"top:-100px;"},
-        {selector:'.inner .f',style:"top:-100px;"},
-        {selector:'@font-face',style:'font-family:maagkramp;src:url(/cube/lib/maagkramp.ttf);'}
+        {selector:'.inner .f',style:"top:-100px;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
