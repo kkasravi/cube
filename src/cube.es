@@ -128,6 +128,101 @@ module cube {
       canvas.Ticker.setFPS(30);
     }
   }
+  class Equation {
+    constructor(properties={}) {
+      private sections, guessindex, instance;
+      this.onnext = this.onnext.bind(this);
+      @guessindex = 0;
+      @operation = properties.operation;
+      @sections = @equation;
+      @sections.element.style({'font-family':'Bender','color':properties.color}).textShadow(Main.shadow);
+      monads.Styleable([{selector:'.sections > .section > .numbers > .field',style:"color:"+properties.color+";"}]).on("load").onstyle();
+      @sections.sections[4].element.on(['touchend','click'],this.onnext);
+    }
+    answer() {
+      var operand1 = @instance.sections[0].numbers.children[0].text()
+      var operator = @instance.sections[1].numbers.children[0].text()
+      var operand2 = @instance.sections[2].numbers.children[0].text()
+      var value;
+      switch(operator) {
+        case '\\u002B':
+          value = parseInt(operand1) + parseInt(operand2);
+          break;
+        case '\\u002D':
+          value = parseInt(operand1) - parseInt(operand2);
+          break;
+        case '\\u00D7':
+          value = parseInt(operand1) * parseInt(operand2);
+          break;
+        case '\\u003D':
+          value = parseInt(operand1) / parseInt(operand2);
+          break;
+      }
+      return value;
+    }
+    guess() {
+      return parseInt(@instance.sections[4].numbers.children[@guessindex].text());
+    }
+    get equation() {
+      var operand1, operand2, answer, guess, guesses=[];
+      switch(@operation) {
+        case 'minus':
+          operand1=Math.round(Math.random()*100); 
+          operand2=operand1+Math.round(Math.random()*100);
+          answer = operand2 - operand1;
+          guesses.push(answer+'');
+          guess = answer+Math.round(Math.random()*10);
+          guesses.push(guess+'');
+          guess = answer-Math.round(Math.random()*10);
+          guesses.push(guess+'');
+          guesses.sort();
+          @instance = numbers.Sections({sets:[[operand2+'','1','1','1'],['\\u002D','\\u002D','\\u002D'],[operand1+'','1','1','1'],['\\u003D','\\u003D'],guesses]});
+          break;
+        case 'multiply':
+          operand1=Math.round(Math.random()*12); 
+          operand2=Math.round(Math.random()*12);
+          answer = operand2 * operand1;
+          guesses.push(answer+'');
+          guess = answer-Math.round(Math.random()*10);
+          guesses.push(guess+'');
+          guess = answer+Math.round(Math.random()*10);
+          guesses.push(guess+'');
+          guesses.sort();
+          @instance = numbers.Sections({sets:[[operand2+'','1','1','1'],['\\u00D7','\\u00D7','\\u00D7'],[operand1+'','1','1','1'],['\\u003D','\\u003D'],guesses]});
+          break;
+        case 'divide':
+          @instance = numbers.Sections({sets:[[,'4','9','1'],['\\u00F7','\\u00F7','\\u00F7'],['3','8','3','9'],['\\u003D','\\u003D'],['8','10','6']]});
+          break;
+        case 'plus':
+          operand1=Math.round(Math.random()*100); 
+          operand2=Math.round(Math.random()*100);
+          answer = operand2 + operand1;
+          guesses.push(answer+'');
+          guess = answer+Math.round(Math.random()*10);
+          guesses.push(guess+'');
+          guess = answer-Math.round(Math.random()*10);
+          guesses.push(guess+'');
+          guesses.sort();
+          @instance = numbers.Sections({sets:[[operand1,'1','1','1'],['\\u002B','\\u002B','\\u002B'],[operand2,'1','1','1'],['\\u003D','\\u003D'],guesses]});
+          break;
+      }
+      return @instance;
+    }
+    onnext() {
+      @guessindex++;
+      if(@guessindex === @sections.sections[4].numbers.children.length) {
+        @guessindex = 0;
+      }
+      @sections && @sections.sections && @sections.sections[4].numbers.next();
+    }
+    static init = (function() {
+      var styles = [
+        {selector:'.sections > .section',style:"border:0;width:180px;"},
+        {selector:'.sections > .section > .numbers > .field',style:"font-size:8em;background:rgba(0,0,0,0);border:0;width:auto;"}
+      ];
+      monads.Styleable(styles).on("load").onstyle();
+    })()
+  }
   class Title {
     constructor() {
       private title;
@@ -139,7 +234,7 @@ module cube {
   class Checker {
     constructor() {
       private checker;
-      @checker = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'20%','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Bender','font-size':'100px','-webkit-transform':'translateY(20%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text(' ').insert(document.body);
+      @checker = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'0','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Bender','font-size':'100px','-webkit-transform':'translateY(10%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text(' ').insert(document.body);
       return @checker;
     }
   }
@@ -720,7 +815,7 @@ module cube {
       @plus.style({'-webkit-transform':'rotateY(90deg) translateX(206px) translateZ(300px) rotateY(-70.5deg)'});
       @difficulty.style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg) rotateX(110deg)'});
       @timer = CountDownTimer({initialX:document.documentElement.clientWidth*0.4,initialY:50});
-      @equation = numbers.Equation({operation:@operation,level:@level,color:@color});
+      @equation = Equation({operation:@operation,level:@level,color:@color});
       @problems.push(@equation);
     }
     ontimeout(event) {
