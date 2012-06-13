@@ -4,12 +4,12 @@ module cube {
   module controller from 'controller';
   module events from 'events';
   module svg from 'svg';
-  module numbers from 'numbers';
+  module carousel from 'numbers';
   module canvas from 'canvas';
 
   class CountDownTimer {
     constructor(properties={initialX:20,initialY:20,totalWidth:300,totalHeight:34}) {
-      private i, container, context, initialX, initialY, progressGradient, radius, stage, totalWidth, totalHeight;
+      private i, context, initialX, initialY, progressGradient, radius, totalWidth, totalHeight;
       @tick = @tick.bind(this);
       @totalWidth = properties.totalWidth||300;
       @totalHeight = properties.totalHeight||34;
@@ -136,13 +136,13 @@ module cube {
       @operation = properties.operation;
       @sections = @equation;
       @sections.element.style({'font-family':'Bender','color':properties.color}).textShadow(Main.shadow);
-      monads.Styleable([{selector:'.sections > .section > .numbers > .field',style:"color:"+properties.color+";"}]).on("load").onstyle();
+      monads.Styleable([{selector:'.sections > .section > .carousel > .field',style:"color:"+properties.color+";"}]).on("load").onstyle();
       @sections.sections[4].element.on(['touchend','click'],this.onnext);
     }
     answer() {
-      var operand1 = @instance.sections[0].numbers.children[0].text()
-      var operator = @instance.sections[1].numbers.children[0].text()
-      var operand2 = @instance.sections[2].numbers.children[0].text()
+      var operand1 = @instance.sections[0].carousel.children[0].text()
+      var operator = @instance.sections[1].carousel.children[0].text()
+      var operand2 = @instance.sections[2].carousel.children[0].text()
       var value;
       switch(operator) {
         case '\\u002B':
@@ -161,7 +161,7 @@ module cube {
       return value;
     }
     guess() {
-      return parseInt(@instance.sections[4].numbers.children[@guessindex].text());
+      return parseInt(@instance.sections[4].carousel.children[@guessindex].text());
     }
     get equation() {
       var operand1, operand2, answer, guess, guesses=[];
@@ -176,7 +176,7 @@ module cube {
           guess = answer-Math.round(Math.random()*10);
           guesses.push(guess+'');
           guesses.sort();
-          @instance = numbers.Sections({sets:[[operand2+'','1','1','1'],['\\u002D','\\u002D','\\u002D'],[operand1+'','1','1','1'],['\\u003D','\\u003D'],guesses]});
+          @instance = carousel.Sections({sets:[[operand2+'','1','1','1'],['\\u002D','\\u002D','\\u002D'],[operand1+'','1','1','1'],['\\u003D','\\u003D'],guesses]});
           break;
         case 'multiply':
           operand1=Math.round(Math.random()*12); 
@@ -188,10 +188,10 @@ module cube {
           guess = answer+Math.round(Math.random()*10);
           guesses.push(guess+'');
           guesses.sort();
-          @instance = numbers.Sections({sets:[[operand2+'','1','1','1'],['\\u00D7','\\u00D7','\\u00D7'],[operand1+'','1','1','1'],['\\u003D','\\u003D'],guesses]});
+          @instance = carousel.Sections({sets:[[operand2+'','1','1','1'],['\\u00D7','\\u00D7','\\u00D7'],[operand1+'','1','1','1'],['\\u003D','\\u003D'],guesses]});
           break;
         case 'divide':
-          @instance = numbers.Sections({sets:[[,'4','9','1'],['\\u00F7','\\u00F7','\\u00F7'],['3','8','3','9'],['\\u003D','\\u003D'],['8','10','6']]});
+          @instance = carousel.Sections({sets:[[,'4','9','1'],['\\u00F7','\\u00F7','\\u00F7'],['3','8','3','9'],['\\u003D','\\u003D'],['8','10','6']]});
           break;
         case 'plus':
           operand1=Math.round(Math.random()*100); 
@@ -203,22 +203,22 @@ module cube {
           guess = answer-Math.round(Math.random()*10);
           guesses.push(guess+'');
           guesses.sort();
-          @instance = numbers.Sections({sets:[[operand1,'1','1','1'],['\\u002B','\\u002B','\\u002B'],[operand2,'1','1','1'],['\\u003D','\\u003D'],guesses]});
+          @instance = carousel.Sections({sets:[[operand1,'1','1','1'],['\\u002B','\\u002B','\\u002B'],[operand2,'1','1','1'],['\\u003D','\\u003D'],guesses]});
           break;
       }
       return @instance;
     }
     onnext() {
       @guessindex++;
-      if(@guessindex === @sections.sections[4].numbers.children.length) {
+      if(@guessindex === @sections.sections[4].carousel.children.length) {
         @guessindex = 0;
       }
-      @sections && @sections.sections && @sections.sections[4].numbers.next();
+      @sections && @sections.sections && @sections.sections[4].carousel.next();
     }
     static init = (function() {
       var styles = [
         {selector:'.sections > .section',style:"border:0;width:180px;"},
-        {selector:'.sections > .section > .numbers > .field',style:"font-size:8em;background:rgba(0,0,0,0);border:0;width:auto;"}
+        {selector:'.sections > .section > .carousel > .field',style:"font-size:8em;background:rgba(0,0,0,0);border:0;width:auto;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
@@ -816,13 +816,16 @@ module cube {
       @difficulty.style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg) rotateX(110deg)'});
       @timer = CountDownTimer({initialX:document.documentElement.clientWidth*0.4,initialY:50});
       @equation = Equation({operation:@operation,level:@level,color:@color});
+      @equation.instance.element.insert(document.body);
       @problems.push(@equation);
     }
     ontimeout(event) {
       var answer = @equation.answer();
       var guess = @equation.guess();
       answer === guess ? @checker.style({'color':'green'}).updateText('\\u2714'): @checker.style({'color':'red'}).updateText('\\u2718');
+      @equation.instance.element.remove();
       @equation = Equation({operation:@operation,level:@level,color:@color});
+      @equation.instance.element.insert(document.body);
       @problems.push(@equation);
       @timer.start();
     }
