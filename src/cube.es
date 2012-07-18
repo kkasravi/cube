@@ -5,128 +5,32 @@ module cube {
   module events from 'events';
   module svg from 'svg';
   module carousel from 'numbers';
-  module canvas from 'canvas';
 
-  class CountDownTimer {
-    constructor(properties={initialX:20,initialY:20,totalWidth:300,totalHeight:34}) {
-      private i, context, initialX, initialY, progressGradient, radius, totalWidth, totalHeight;
-      @tick = @tick.bind(this);
-      @totalWidth = properties.totalWidth||300;
-      @totalHeight = properties.totalHeight||34;
-      @initialX = properties.initialX||20;
-      @initialY = properties.initialY||20;
-      @radius = @totalHeight/2;
-      @element = monads.DOMable({tagName:'canvas'}).on('load').attributes({'id':'countdowntimer',width:document.documentElement.clientWidth,height:'680'}).style({'position':'absolute','top':'0','left':'0','background-color':'transparent'}).insert(document.body).element();
-      @context = @element.getContext('2d');
-      @progressGradient = @context.createLinearGradient(0,@initialY+@totalHeight,0,0);
-      @progressGradient.addColorStop(0, '#4DA4F3');
-      @progressGradient.addColorStop(0.4, '#ADD9FF');
-      @progressGradient.addColorStop(1, '#9ED1FF');
-      @start();
-    }
-    tick() {
-      @i--;
-      if(@i >= 0) {
-        @progressLayerRect(@context, @initialX, @initialY, @totalWidth, @totalHeight, @radius);
-        @progressBarRect(@context, @initialX, @initialY, @i, @totalHeight, @radius, @totalWidth);
-        @progressText(@context, @initialX, @initialY, @i, @totalHeight, @radius, @totalWidth);
-      } else {
-        canvas.Ticker.stop();
-        controller.Controller.publish(events.CustomEvent({type:'timeout',canBubble:false,isCanceleable:true}));
-      }
-    }
-    roundRect() {
-      @context.beginPath();
-      @context.moveTo(@initialX + @radius, @initialY);
-      @context.lineTo(@initialX + @totalWidth - @radius, @initialY);
-      @context.arc(@initialX+@totalWidth-@radius, @initialY+@radius, @radius, -Math.PI/2, Math.PI/2, false);
-      @context.lineTo(@initialX + @radius, @initialY + @totalHeight);
-      @context.arc(@initialX+@radius, @initialY+@radius, @radius, Math.PI/2, 3*Math.PI/2, false);
-      @context.closePath();
-      @context.fill();
-    }
-    progressLayerRect(ctx, x, y, width, height, radius, shadow) {
-        ctx.save();
-        if(shadow) {
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 0;
-          ctx.shadowBlur = 0;
-          ctx.shadowColor = '#666';
-        }
-        ctx.fillStyle = 'rgba(189,189,189,1)';
-        @roundRect();
-        // Overlay with gradient
-        ctx.shadowColor = 'rgba(0,0,0,0)'
-        var lingrad = ctx.createLinearGradient(0,y+height,0,0);
-        lingrad.addColorStop(0, 'rgba(255,255,255, 0.1)');
-        lingrad.addColorStop(0.4, 'rgba(255,255,255, 0.7)');
-        lingrad.addColorStop(1, 'rgba(255,255,255,0.4)');
-        ctx.fillStyle = lingrad;
-        @roundRect();
-        ctx.fillStyle = 'white';
-        ctx.restore();
-    }
-    progressBarRect(ctx, x, y, width, height, radius, max) {
-        // var to store offset for proper filling when inside rounded area
-        var offset = 0;
-        ctx.beginPath();
-        if (width<radius) {
-            offset = radius - Math.sqrt(Math.pow(radius,2)-Math.pow((radius-width),2));
-            ctx.moveTo(x + width, y+offset);
-            ctx.lineTo(x + width, y+height-offset);
-            ctx.arc(x + radius, y + radius, radius, Math.PI - Math.acos((radius - width) / radius), Math.PI + Math.acos((radius - width) / radius), false);
-        }
-        else if (width+radius>max) {
-            offset = radius - Math.sqrt(Math.pow(radius,2)-Math.pow((radius - (max-width)),2));
-            ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + width, y);
-            ctx.arc(x+max-radius, y + radius, radius, -Math.PI/2, -Math.acos((radius - (max-width)) / radius), false);
-            ctx.lineTo(x + width, y+height-offset);
-            ctx.arc(x+max-radius, y + radius, radius, Math.acos((radius - (max-width)) / radius), Math.PI/2, false);
-            ctx.lineTo(x + radius, y + height);
-            ctx.arc(x+radius, y+radius, radius, Math.PI/2, 3*Math.PI/2, false);
-        }
-        else {
-            ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + width, y);
-            ctx.lineTo(x + width, y + height);
-            ctx.lineTo(x + radius, y + height);
-            ctx.arc(x+radius, y+radius, radius, Math.PI/2, 3*Math.PI/2, false);
-        }
-        ctx.closePath();
-        ctx.fill();
-  
-        // draw progress bar right border shadow
-        if (width<max-1) {
-            ctx.save();
-            ctx.shadowOffsetX = 1;
-            ctx.shadowBlur = 1;
-            ctx.shadowColor = '#666';
-            if (width+radius>max)
-              offset = offset+1;
-            ctx.fillRect(x+width,y+offset,1,@totalHeight-offset*2);
-            ctx.restore();
-        }
-    }
-    progressText(ctx, x, y, width, height, radius, max) {
-        ctx.save();
-        ctx.fillStyle = 'white';
-        ctx.font = "20pt Bender";
-        var text = Math.floor(width/max*100)+"%";
-        var text_width = ctx.measureText(text).width;
-        var text_x = x+width-text_width-radius/2;
-        if (width<=radius+text_width) {
-            text_x = x+radius/2;
-        }
-        ctx.fillText(text, text_x, y+22);
-        ctx.restore();
+  class ProgressBar {
+    constructor(properties={time:5}) {
+      private element, div, time;
+      @onend = @onend.bind(this);
+      @time = properties.time;
+      @div = monads.DOMable({tagName:'div'}).on('load');
+      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'progressbar'}).add(
+         div.element()
+      ).insert(document.body);
     }
     start() {
-      @i = @totalWidth;
-      @context.fillStyle = @progressGradient;
-      canvas.Ticker.addListener(this);
-      canvas.Ticker.setFPS(30);
+      @div.animation({property:'progress',time:@time+'s',count:'infinite'});
+      @div.element().addEventListener('webkitAnimationIteration',this.onend);
     }
+    onend() {
+      controller.Controller.publish(events.CustomEvent({type:'timeout',canBubble:false,isCanceleable:true}));
+    }
+    static init = (function() {
+      var styles = [
+        {selector:'#progressbar',style:"margin-top:15px;margin-left:35%;width:20%;background-color:transparent;border-radius:13px;padding:3px;"},
+        {selector:'#progressbar div',style:"background-color:orange;width:90%;height:20px;border-radius:10px;"},
+        {selector:'@-webkit-keyframes progress',style:"from {width:100%;} to {width:0%;}"}
+      ];
+      monads.Styleable(styles).on("load").onstyle();
+    })()
   }
   class Equation {
     constructor(properties={}) {
@@ -160,6 +64,10 @@ module cube {
       }
       return value;
     }
+    clear() {
+      @instance.sections[0].carousel.next();
+      @instance.sections[2].carousel.next();
+    }
     guess() {
       return parseInt(@instance.sections[4].carousel.children[@guessindex].text());
     }
@@ -176,7 +84,7 @@ module cube {
           guess = answer-Math.round(Math.random()*10);
           guesses.push(guess+'');
           guesses.sort();
-          @instance = carousel.Sections({sets:[[operand2+'','1','1','1'],['\\u002D','\\u002D','\\u002D'],[operand1+'','1','1','1'],['\\u003D','\\u003D'],guesses]});
+          @instance = carousel.Sections({sets:[[operand2+'',' ',' ',' '],['\\u002D','\\u002D','\\u002D'],[operand1+'',' ',' ',' '],['\\u003D','\\u003D'],guesses]});
           break;
         case 'multiply':
           operand1=Math.round(Math.random()*12); 
@@ -233,9 +141,14 @@ module cube {
   }
   class Checker {
     constructor() {
-      private checker;
-      @checker = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'0','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Bender','font-size':'100px','-webkit-transform':'translateY(10%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text(' ').insert(document.body);
-      return @checker;
+      private wrong, right, wrongAnswers, rightAnswers;
+      @wrongAnswers = 0;
+      @wrong = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'50px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Bender','font-size':'50px','-webkit-transform':'translateY(1%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2718').insert(document.body);
+      @rightAnswers = 0;
+      @right = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'150px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Bender','font-size':'50px','-webkit-transform':'translateY(1%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2714').insert(document.body);
+    }
+    answer(guess) {
+      guess ? @right.style({'color':'green'}).updateText((@rightAnswers++)+' \\u2714'): @wrong.style({'color':'red'}).updateText((@wrongAnswers++)+' \\u2718');
     }
   }
   class Play {
@@ -749,14 +662,14 @@ module cube {
     static init = (function() {
       var styles = [
         {selector:'@-webkit-keyframes shurikenspin',style:"from {-webkit-transform:rotate(0deg);} to {-webkit-transform:rotate(360deg);}"},
-        {selector:'.shuriken',style:"position:absolute;top:4%;left:24%;-webkit-transform-origin-x:42px;-webkit-transform-origin-y:44px;-webkit-animation:shurikenspin 1500ms linear infinite;"},
+        {selector:'.shuriken',style:"position:absolute;top:4%;left:24%;-webkit-transform-origin-x:42px;-webkit-transform-origin-y:44px;-webkit-animation:shurikenspin 1500ms linear infinite;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
   }
   class Main {
     constructor() {
-      private container, checker, color, difficulty, divide, frame, level, minus, multiply, equation, operation, problems, play, plus, shuriken, timer, title;
+      private container, checker, color, difficulty, divide, frame, level, minus, multiply, equation, operation, problems, play, plus, shuriken, title;
       this.ontouchstart = this.ontouchstart.bind(this);
       this.ontouchmove = this.ontouchmove.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
@@ -814,7 +727,7 @@ module cube {
       @divide.style({'-webkit-transform':'rotateY(213deg) translateX(40px) translateZ(80px)'});
       @plus.style({'-webkit-transform':'rotateY(90deg) translateX(206px) translateZ(300px) rotateY(-70.5deg)'});
       @difficulty.style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg) rotateX(110deg)'});
-      @timer = CountDownTimer({initialX:document.documentElement.clientWidth*0.4,initialY:50});
+      ProgressBar({time:@level==='easy'?8:5}).start();
       @equation = Equation({operation:@operation,level:@level,color:@color});
       @equation.instance.element.insert(document.body);
       @problems.push(@equation);
@@ -822,12 +735,12 @@ module cube {
     ontimeout(event) {
       var answer = @equation.answer();
       var guess = @equation.guess();
-      answer === guess ? @checker.style({'color':'green'}).updateText('\\u2714'): @checker.style({'color':'red'}).updateText('\\u2718');
+      @checker.answer(answer === guess);
+//      @equation.clear();
       @equation.instance.element.remove();
       @equation = Equation({operation:@operation,level:@level,color:@color});
       @equation.instance.element.insert(document.body);
       @problems.push(@equation);
-      @timer.start();
     }
     ontouchstart(event) {
       event.preventDefault();
