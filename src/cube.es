@@ -5,10 +5,79 @@ module cube {
   module events from 'events';
   module svg from 'svg';
   module carousel from 'numbers';
-
+  module canvas from 'canvas';
+  class Sparkles {
+    constructor() {
+      private element, stage, imgSeq, bmpSeq;
+      @onclick = @onclick.bind(this);
+      @onimageload = @onimageload.bind(this);
+      @onmove = @onmove.bind(this);
+      @tick = @tick.bind(this);
+      @imgSeq = new Image();
+      @element = monads.DOMable({tagName:'canvas'}).on('load').attributes({'id':'testCanvas',width:'980',height:'680'}).style({'background-color':'#000'}).on(['click','touchend'],@onclick).on(['touchmove','mousemove'],@onmove).insert(document.body).element();
+      @stage = canvas.Stage({autoClear:false,canvas:@element});
+      @imgSeq.onload = @onimageload;
+      @imgSeq.src = "img/sparkle_21x23.png";
+    }
+    onimageload() {
+      @stage.addChild(canvas.Shape({alpha:0.33,graphics:canvas.Graphics().beginFill('#000').drawRect(0,0,@element.width+1,@element.height)}));
+      @bmpSeq = canvas.BitmapSequence({regX:10.5,regY:11.5,spriteSheet:canvas.SpriteSheet({image:@imgSeq,frameWidth:21,frameHeight:23})});
+      canvas.Ticker.addListener(this);
+    }
+    tick() {
+      var h = @element.height;
+      var l = @stage.getNumChildren();
+      for (var i=l-1; i>0; i--) {
+        var sparkle = @stage.getChildAt(i);
+        sparkle.vY += 2;
+        sparkle.vX *= 0.98;
+        sparkle.x += sparkle.vX;
+        sparkle.y += sparkle.vY;
+        sparkle.scaleX = sparkle.scaleY = sparkle.scaleX+sparkle.vS;
+        sparkle.alpha += sparkle.vA;
+        if (sparkle.y > h) {
+          sparkle.vY *= -0.6;
+          sparkle.y -= sparkle.y%h;
+        }
+        if (sparkle.alpha <= 0) {
+          @stage.removeChildAt(i);
+        }
+      }
+      @stage.update();
+    }
+    onclick(e) {
+      @addSparkles(Math.random()*200+100|0, e.pageX-@element.offsetLeft, e.pageY-@element.offsetTop, 2);
+    }
+    onmove(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      @addSparkles(Math.random()*2+1|0, e.pageX-@element.offsetLeft, e.pageY-@element.offsetTop, 1);
+    }
+    addSparkles(count, x, y, speed) {
+      for (var i=0; i<count; i++) {
+        var sparkle = canvas.BitmapSequence(@bmpSeq);
+        sparkle.x = x;
+        sparkle.y = y;
+        sparkle.rotation = Math.random()*360;
+        sparkle.alpha = Math.random()*0.5+0.5;
+        sparkle.scaleX = sparkle.scaleY = Math.random()+0.3;
+        sparkle.compositeOperation = "lighter";
+        var a = Math.PI*2*Math.random();
+        var v = (Math.random()-0.5)*30*speed;
+        sparkle.vX = Math.cos(a)*v;
+        sparkle.vY = Math.sin(a)*v;
+        sparkle.vS = (Math.random()-0.5)*0.2; // scale
+        sparkle.vA = -Math.random()*0.05-0.01; // alpha
+        sparkle.currentFrame = Math.random()*12|0;
+        @stage.addChild(sparkle);
+      }
+    }
+  }
   class ProgressBar {
     constructor(properties={time:5}) {
       private element, div, time;
+      @oncountdown = @oncountdown.bind(this);
+      @oniteration = @oniteration.bind(this);
       @onend = @onend.bind(this);
       @time = properties.time;
       @div = monads.DOMable({tagName:'div'}).on('load');
@@ -18,15 +87,23 @@ module cube {
     }
     start() {
       @div.animation({property:'progress',time:@time+'s',count:'infinite'});
-      @div.element().addEventListener('webkitAnimationIteration',this.onend);
+      @div.element().addEventListener('webkitAnimationStart',this.onstart);
+      @div.element().addEventListener('webkitAnimationIteration',this.oniteration);
+    }
+    oncountdown() {
+log.Logger.debug(this,'oncountdown');
+//	setTimer(1000,@oncountdown);
+    }
+    oniteration() {
+      controller.Controller.publish(events.CustomEvent({type:'timeout',canBubble:false,isCanceleable:true}));
     }
     onend() {
-      controller.Controller.publish(events.CustomEvent({type:'timeout',canBubble:false,isCanceleable:true}));
+log.Logger.debug(this,'onend');
     }
     static init = (function() {
       var styles = [
         {selector:'#progressbar',style:"margin-top:15px;margin-left:35%;width:20%;background-color:transparent;border-radius:13px;padding:3px;"},
-        {selector:'#progressbar div',style:"background-color:orange;width:90%;height:20px;border-radius:10px;"},
+        {selector:'#progressbar div',style:"background-image:-webkit-gradient(linear,left bottom,left top,color-stop(0.45, rgb(255,132,25)), color-stop(0.73, rgb(234,235,193)), color-stop(0.87, rgb(255,132,25)));width:90%;height:20px;border-radius:10px;"},
         {selector:'@-webkit-keyframes progress',style:"from {width:100%;} to {width:0%;}"}
       ];
       monads.Styleable(styles).on("load").onstyle();
@@ -125,8 +202,8 @@ module cube {
     }
     static init = (function() {
       var styles = [
-        {selector:'.sections > .section',style:"border:0;width:180px;"},
-        {selector:'.sections > .section > .carousel > .field',style:"font-size:8em;background:rgba(0,0,0,0);border:0;width:auto;"}
+        {selector:'.sections > .section',style:"border:0;width:200px;"},
+        {selector:'.sections > .section > .carousel > .field',style:"font-size:7em;background:rgba(0,0,0,0);border:0;width:200px;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
