@@ -9,18 +9,16 @@ module cube {
   class Sparkles {
     constructor() {
       private element, stage, imgSeq, bmpSeq;
-      @onclick = @onclick.bind(this);
       @onimageload = @onimageload.bind(this);
-      @onmove = @onmove.bind(this);
       @tick = @tick.bind(this);
       @imgSeq = new Image();
-      @element = monads.DOMable({tagName:'canvas'}).on('load').attributes({'id':'testCanvas',width:'980',height:'680'}).style({'background-color':'#000'}).on(['click','touchend'],@onclick).on(['touchmove','mousemove'],@onmove).insert(document.body).element();
+      @element = monads.DOMable({tagName:'canvas'}).on('load').attributes({'id':'testCanvas',width:'980',height:'680'}).style({'background-color':'transparent','left':'20%','position':'absolute'}).insert(document.body).element();
       @stage = canvas.Stage({autoClear:false,canvas:@element});
       @imgSeq.onload = @onimageload;
       @imgSeq.src = "img/sparkle_21x23.png";
     }
     onimageload() {
-      @stage.addChild(canvas.Shape({alpha:0.33,graphics:canvas.Graphics().beginFill('#000').drawRect(0,0,@element.width+1,@element.height)}));
+      @stage.addChild(canvas.Shape({alpha:0.33,graphics:canvas.Graphics().beginFill('transparent').drawRect(0,0,@element.width+1,@element.height)}));
       @bmpSeq = canvas.BitmapSequence({regX:10.5,regY:11.5,spriteSheet:canvas.SpriteSheet({image:@imgSeq,frameWidth:21,frameHeight:23})});
       canvas.Ticker.addListener(this);
     }
@@ -44,14 +42,6 @@ module cube {
         }
       }
       @stage.update();
-    }
-    onclick(e) {
-      @addSparkles(Math.random()*200+100|0, e.pageX-@element.offsetLeft, e.pageY-@element.offsetTop, 2);
-    }
-    onmove(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      @addSparkles(Math.random()*2+1|0, e.pageX-@element.offsetLeft, e.pageY-@element.offsetTop, 1);
     }
     addSparkles(count, x, y, speed) {
       for (var i=0; i<count; i++) {
@@ -746,7 +736,7 @@ log.Logger.debug(this,'onend');
   }
   class Main {
     constructor() {
-      private container, checker, color, difficulty, divide, frame, level, minus, multiply, equation, operation, problems, play, plus, shuriken, title;
+      private container, checker, color, difficulty, divide, frame, level, minus, multiply, equation, operation, problems, play, plus, shuriken, sparkles, title;
       this.ontouchstart = this.ontouchstart.bind(this);
       this.ontouchmove = this.ontouchmove.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
@@ -805,6 +795,7 @@ log.Logger.debug(this,'onend');
       @plus.style({'-webkit-transform':'rotateY(90deg) translateX(206px) translateZ(300px) rotateY(-70.5deg)'});
       @difficulty.style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg) rotateX(110deg)'});
       ProgressBar({time:@level==='easy'?8:5}).start();
+      @sparkles = Sparkles();
       @equation = Equation({operation:@operation,level:@level,color:@color});
       @equation.instance.element.insert(document.body);
       @problems.push(@equation);
@@ -812,8 +803,9 @@ log.Logger.debug(this,'onend');
     ontimeout(event) {
       var answer = @equation.answer();
       var guess = @equation.guess();
-      @checker.answer(answer === guess);
-//      @equation.clear();
+      var correct = answer === guess;
+      correct && @sparkles.addSparkles(Math.random()*200+100|0, 545, 150, 2);
+      @checker.answer(correct);
       @equation.instance.element.remove();
       @equation = Equation({operation:@operation,level:@level,color:@color});
       @equation.instance.element.insert(document.body);
