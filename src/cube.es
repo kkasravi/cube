@@ -781,6 +781,7 @@ log.Logger.debug(this,'onend');
       @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(@frame).insert(document.body);
 //      @shuriken.insert(document.body);
       monads.DOMable({element:document.body}).on('touchstart',this.ontouchstart).on('touchmove',this.ontouchmove).on(['touchend','click'],this.ontouchend);
+log.Logger.debug(this,'clientWidth='+document.documentElement.clientWidth);
     }
     ondifficulty(event) {
       @level = event.detail;
@@ -804,7 +805,10 @@ log.Logger.debug(this,'onend');
       var answer = @equation.answer();
       var guess = @equation.guess();
       var correct = answer === guess;
-      correct && @sparkles.addSparkles(Math.random()*200+100|0, 545, 150, 2);
+      var x = document.documentElement.clientWidth/2;
+      var y = document.documentElement.clientHeight/3;
+log.Logger.debug(this,'x='+x+' y='+y);
+      correct && @sparkles.addSparkles(Math.random()*200+100|0, x, y, 2);
       @checker.answer(correct);
       @equation.instance.element.remove();
       @equation = Equation({operation:@operation,level:@level,color:@color});
@@ -849,7 +853,6 @@ log.Logger.debug(this,'onend');
       monads.Styleable(styles).on("load").onstyle();
     })()
   }
-
   class AppType {
     constructor() {
       Main();
