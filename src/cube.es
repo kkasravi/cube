@@ -106,7 +106,7 @@ log.Logger.debug(this,'onend');
       @guessindex = 0;
       @operation = properties.operation;
       @sections = @equation;
-      @sections.element.style({'font-family':'Bender','color':properties.color}).textShadow(Main.shadow);
+      @sections.element.style({'font-family':'Albertino','color':properties.color}).textShadow(Main.shadow);
       monads.Styleable([{selector:'.sections > .section > .carousel > .field',style:"color:"+properties.color+";"}]).on("load").onstyle();
       @sections.sections[4].element.on(['touchend','click'],this.onnext);
     }
@@ -201,8 +201,8 @@ log.Logger.debug(this,'onend');
   class Title {
     constructor() {
       private title;
-      @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','width':'420px','color':'#e97825','font-family':'Bender','font-size':'80px','-webkit-transform':'translateX(-220px) translateY(-120px) rotateY(-230deg) rotateX(76deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('Ninja Math');
-      @title.delay(@title.style,[{'-webkit-transform':'translateX(-220px) translateY(-120px) rotateY(-230deg) rotateX(0deg)'}],300);
+      @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','width':'420px','color':'#e97825','font-family':'Albertino','font-size':'80px','-webkit-transform':'translateX(-220px) translateY(-120px) rotateY(-230deg) rotateX(76deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('Ninja Math');
+      @title.delay(@title.style,[{'-webkit-transform':'translateX(-140px) translateY(-120px) rotateY(-230deg) rotateX(0deg)'}],300);
       return @title;
     }
   }
@@ -210,9 +210,9 @@ log.Logger.debug(this,'onend');
     constructor() {
       private wrong, right, wrongAnswers, rightAnswers;
       @wrongAnswers = 0;
-      @wrong = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'50px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Bender','font-size':'50px','-webkit-transform':'translateY(1%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2718').insert(document.body);
+      @wrong = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'50px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(1%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2718').insert(document.body);
       @rightAnswers = 0;
-      @right = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'150px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Bender','font-size':'50px','-webkit-transform':'translateY(1%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2714').insert(document.body);
+      @right = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'150px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(1%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2714').insert(document.body);
     }
     answer(guess) {
       guess ? @right.style({'color':'green'}).updateText((@rightAnswers++)+' \\u2714'): @wrong.style({'color':'red'}).updateText((@wrongAnswers++)+' \\u2718');
@@ -224,7 +224,7 @@ log.Logger.debug(this,'onend');
       this.onchoose = this.onchoose.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
       @choice = null;
-      @play = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transition':'-webkit-transform 400ms linear','-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) rotateZ(0deg) scale(3.0)','white-space':'nowrap','height':'60px','width':'60px','color':'#e97825','font-family':'Bender','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
+      @play = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transition':'-webkit-transform 400ms linear','-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) rotateZ(0deg) scale(3.0)','white-space':'nowrap','height':'60px','width':'60px','color':'#e97825','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
       @play.on(['touchend','click'],this.ontouchend);
       controller.Controller.subscribe('choose',this.onchoose);
       return @play;
@@ -237,15 +237,58 @@ log.Logger.debug(this,'onend');
       @choice && controller.Controller.publish(events.CustomEvent({type:'play',canBubble:false,isCanceleable:true,detail:@choice}));
     }
   }
+  class Levels {
+    constructor() {
+      private levels, one, two, three, four, title;
+      this.onone = this.onone.bind(this);
+      this.ontwo = this.ontwo.bind(this);
+      this.onthree = this.onthree.bind(this);
+      this.onfour = this.onfour.bind(this);
+      @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('levels:');
+      @one = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateY(100px)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('1').on(['click','touchend'],this.onone);
+      @two = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(80px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('2').on(['click','touchend'],this.ontwo);
+      @three = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(160px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('3').on(['click','touchend'],this.onthree);
+      @four = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(240px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('4').on(['click','touchend'],this.onfour);
+//      @levels = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(30px) translateY(130px) rotateY(-230deg)','-webkit-transition':'-webkit-transform 400ms linear'}
+      @levels = monads.DOMable({tagName:'div'}).on('load').add(
+        @title
+      ).add(
+        @one
+      ).add(
+        @two
+      ).add(
+        @three
+      ).add(
+        @four
+      );
+      return @levels;
+    }
+    onone(event) {
+log.Logger.debug(this,'publishing 1');
+      controller.Controller.publish(events.CustomEvent({type:'level',canBubble:false,isCanceleable:true,detail:'1'}));
+    }
+    ontwo(event) {
+log.Logger.debug(this,'publishing 2');
+      controller.Controller.publish(events.CustomEvent({type:'level',canBubble:false,isCanceleable:true,detail:'2'}));
+    }
+    onthree(event) {
+log.Logger.debug(this,'publishing 3');
+      controller.Controller.publish(events.CustomEvent({type:'level',canBubble:false,isCanceleable:true,detail:'3'}));
+    }
+    onfour(event) {
+log.Logger.debug(this,'publishing 4');
+      controller.Controller.publish(events.CustomEvent({type:'level',canBubble:false,isCanceleable:true,detail:'4'}));
+    }
+  }
   class Difficulty {
     constructor() {
       private difficulty, easy, easyarrow, hard, hardarrow;
       this.oneasy = this.oneasy.bind(this);
       this.onhard = this.onhard.bind(this);
-      @easy = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Bender','font-size':'60px'}).textShadow(Main.shadow).text('Easy').on(['click','touchend'],this.oneasy);
-      @hard = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(220px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Bender','font-size':'60px'}).textShadow(Main.shadow).text('Hard').on(['click','touchend'],this.onhard);
-      @easyarrow =  monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-60px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Bender','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
-      @hardarrow =  monads.DOMable({tagName:'div'}).on('load').style({'display':'none','-webkit-transform':'translateX(160px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Bender','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
+      @easy = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('Easy').on(['click','touchend'],this.oneasy);
+      @hard = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(220px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('Hard').on(['click','touchend'],this.onhard);
+      @easyarrow =  monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-60px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
+      @hardarrow =  monads.DOMable({tagName:'div'}).on('load').style({'display':'none','-webkit-transform':'translateX(160px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
       @difficulty = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg)','-webkit-transition':'-webkit-transform 400ms linear'}).add(
         @easyarrow
       ).add(
@@ -272,7 +315,7 @@ log.Logger.debug(this,'onend');
     constructor() {
       private element, next;
       this.onnext = this.onnext.bind(this);
-      @next = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Bender','font-size':'8em'}).textShadow(Main.shadow).text('\\u2794').on(['click','touchend'],this.onnext);
+      @next = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'8em'}).textShadow(Main.shadow).text('\\u2794').on(['click','touchend'],this.onnext);
       @element = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(60%) translateY(30px)','-webkit-transition':'-webkit-transform 400ms linear'}).add(
         @next
       ).insert(document.body);
@@ -281,6 +324,52 @@ log.Logger.debug(this,'onend');
     onnext(event) {
       controller.Controller.publish(events.CustomEvent({type:'next',canBubble:false,isCanceleable:true}));
     }
+  }
+  class Ninja {
+    constructor() {
+      private element, id;
+      @id = Math.uuid(8);
+      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'ninja'}).add(
+        svg.Svg({xmlns:"http://www.w3.org/2000/svg",width:"428pt",height:"596pt"}).
+          path({d:"m 310.83594,189.77734 c 0,45.51172 -39.77344,82.40235 -88.83203,82.40235 -49.0625,0 -88.83204,-36.89063 -88.83204,-82.40235 0,-45.51172 39.76954,-82.40234 88.83204,-82.40234 49.05859,0 88.83203,36.89062 88.83203,82.40234",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 303.28125,183.76953 c 0,0 -49.76172,-31.14062 -111.14063,-31.14062 -19.16015,0 -37.18359,3.03125 -52.91796,7.20312 -3.90625,9.28125 -6.05079,19.38281 -6.05079,29.94531 0,4.21875 0.34375,8.36328 1.00391,12.41016 16.875,3.98828 62.8125,5.55469 84.05078,5.55469 61.38281,0 85.05469,-23.97266 85.05469,-23.97266",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 174.65625,186.03516 c 0,5.07031 -5.61719,9.17968 -12.54688,9.17968 -6.92578,0 -12.54687,-4.10937 -12.54687,-9.17968 0,-5.07032 5.62109,-9.17969 12.54687,-9.17969 6.92969,0 12.54688,4.10937 12.54688,9.17969",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 243.29687,187.9375 c 0,5.07031 -5.61718,9.17969 -12.54687,9.17969 -6.92969,0 -12.54688,-4.10938 -12.54688,-9.17969 0,-5.07031 5.61719,-9.17969 12.54688,-9.17969 6.92969,0 12.54687,4.10938 12.54687,9.17969",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 175.46875,178.08984 -20.08984,-8.08203 7.54687,-5.97265 19.89844,13.75 -7.35547,0.30468",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 210.76953,178.95703 23.96094,-14.44531 8.5664,7.22265 -25.09375,8.31641 -7.43359,-1.09375",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 268.62891,265.14453 c -13.90235,8.49219 -30.23438,13.38281 -47.70313,13.38281 -18.50391,0 -35.72266,-5.49218 -50.13672,-14.92578 -31.01172,13.26172 -31.01172,42.79297 -31.01172,77.08985 0,15.28125 0,32.40234 0,47.67968 0,46.70313 0,84.5586 78.27735,84.5586 78.27343,0 78.27343,-37.85547 78.27343,-84.5586 0,-15.27734 0,-32.39843 0,-47.67968 0,-33.02735 -0.008,-61.62891 -27.69921,-75.54688",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 213.17187,485.82422 c 0,11.35156 -66.84765,11.35156 -66.84765,0 0,-11.35156 14.96484,-20.55078 33.42187,-20.55078 18.46094,0 33.42578,9.19922 33.42578,20.55078",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 289.78125,485.82422 c 0,11.35156 -66.84766,11.35156 -66.84766,0 0,-11.35156 14.96485,-20.55078 33.42578,-20.55078 18.45704,0 33.42188,9.19922 33.42188,20.55078",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 219.74219,315.99609 c -0.92578,-12.28515 23.97265,-32.1875 53.89453,-34.4414 29.92578,-2.25391 48.6914,5.23047 54.47265,26.28125 6.30079,22.95703 -26.07421,36.73437 -56,38.98828 -29.92187,2.2539 -51.4414,-18.53906 -52.36718,-30.82813",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 213.44531,350.26172 c -3.91406,11.6875 -34.57812,20.375 -63.03515,10.85156 -28.45703,-9.52734 -42.84766,-23.70312 -40.01563,-45.35156 3.09375,-23.60156 38.28125,-23.7461 66.73828,-14.21875 28.45313,9.52344 40.22656,37.03125 36.3125,48.71875",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 230.35547,362.66406 c -2.58594,3.38672 -7.42188,4.03516 -10.8086,1.45313 l -6,-4.57813 c -3.38671,-2.58203 -4.03515,-7.42187 -1.45312,-10.80859 L 399.86719,102.63281 c 2.58203,-3.386716 6.80468,28.94531 6.80468,28.94531 l -176.3164,231.08594",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 283.09766,298.00781 c -0.40625,0.52344 -1.16407,0.625 -1.69141,0.21875 l -20.41016,-15.70703 c -0.52734,-0.40625 -0.625,-1.16406 -0.21875,-1.69141 l 2.79297,-3.63281 c 0.41016,-0.52734 1.16406,-0.625 1.69531,-0.21875 l 20.40625,15.70703 c 0.52735,0.40625 0.62891,1.16407 0.22266,1.69141 l -2.79687,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 277.63281,305.10547 c -0.40625,0.52734 -1.16015,0.625 -1.6914,0.21875 l -20.41016,-15.70703 c -0.52734,-0.40235 -0.625,-1.16016 -0.21875,-1.6875 l 2.79297,-3.63282 c 0.41015,-0.52734 1.16406,-0.625 1.69531,-0.22265 l 20.41016,15.70703 c 0.52343,0.40625 0.625,1.16406 0.21875,1.69141 l -2.79688,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 272.17187,312.20312 c -0.40625,0.52735 -1.16406,0.62891 -1.6914,0.22266 l -20.41016,-15.70703 c -0.52734,-0.40625 -0.625,-1.16406 -0.21875,-1.69141 l 2.79297,-3.63281 c 0.40625,-0.52734 1.16406,-0.625 1.69141,-0.21875 l 20.41015,15.70703 c 0.52735,0.40625 0.625,1.16406 0.21875,1.69141 l -2.79297,3.6289",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 266.70703,319.30469 c -0.40625,0.52734 -1.16406,0.625 -1.69141,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16407 -0.21875,-1.69141 l 2.79687,-3.63281 c 0.40235,-0.52344 1.16016,-0.625 1.6875,-0.21875 l 20.41016,15.70703 c 0.52734,0.40625 0.62891,1.16406 0.22266,1.6914 l -2.79688,3.63282",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 261.24219,326.40234 c -0.40625,0.52735 -1.16407,0.62891 -1.69141,0.22266 l -20.40625,-15.70703 c -0.53125,-0.40625 -0.62891,-1.16406 -0.22266,-1.69141 l 2.79688,-3.63281 c 0.40234,-0.52734 1.16406,-0.625 1.6875,-0.21875 l 20.41016,15.70703 c 0.53125,0.40625 0.6289,1.16016 0.22265,1.69141 l -2.79687,3.6289",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 255.77734,333.50391 c -0.40625,0.52734 -1.16015,0.6289 -1.6914,0.21875 l -20.40625,-15.70704 c -0.53125,-0.40234 -0.62891,-1.16015 -0.22266,-1.6875 l 2.79688,-3.63281 c 0.40625,-0.52734 1.16015,-0.6289 1.6875,-0.22265 l 20.41406,15.70703 c 0.52734,0.41015 0.625,1.16406 0.21875,1.6914 l -2.79688,3.63282",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 250.3125,340.60547 c -0.40625,0.52734 -1.16016,0.625 -1.69141,0.21875 l -20.40625,-15.70703 c -0.52734,-0.40625 -0.625,-1.16407 -0.22265,-1.6875 l 2.79687,-3.63282 c 0.40625,-0.53125 1.16406,-0.6289 1.69141,-0.22265 l 20.41015,15.70703 c 0.52735,0.40625 0.625,1.16406 0.21875,1.69141 l -2.79687,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 244.85156,347.70312 c -0.40625,0.52735 -1.16406,0.62891 -1.6914,0.22266 L 222.75,332.21875 c -0.52734,-0.40625 -0.625,-1.16406 -0.21875,-1.69531 l 2.79297,-3.62891 c 0.40625,-0.52734 1.16406,-0.625 1.6914,-0.21875 l 20.41016,15.70703 c 0.52734,0.40625 0.625,1.16016 0.21875,1.6875 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 239.39062,354.80469 c -0.41015,0.52734 -1.16406,0.625 -1.69531,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16407 -0.21875,-1.69141 l 2.79687,-3.63281 c 0.40625,-0.52735 1.16016,-0.625 1.69141,-0.21875 l 20.40625,15.70703 c 0.52734,0.40625 0.6289,1.16406 0.22265,1.6914 l -2.79297,3.63282",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 233.92578,361.90234 c -0.41016,0.52735 -1.16406,0.62891 -1.69531,0.22266 l -20.41016,-15.71094 c -0.52344,-0.40234 -0.625,-1.16015 -0.21875,-1.6875 l 2.79688,-3.63281 c 0.40625,-0.52734 1.16406,-0.625 1.6914,-0.22266 l 20.40625,15.70703 c 0.53125,0.40625 0.62891,1.16407 0.22266,1.69141 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 228.46094,369.00391 c -0.40625,0.52734 -1.16407,0.625 -1.69141,0.21875 l -20.41016,-15.70704 c -0.52734,-0.40625 -0.6289,-1.16406 -0.21875,-1.6914 l 2.79297,-3.63281 c 0.40625,-0.52344 1.16407,-0.625 1.69141,-0.21875 l 20.40625,15.70703 c 0.53125,0.40625 0.62891,1.16406 0.22266,1.6914 l -2.79297,3.63282",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 222.99609,376.10547 c -0.40625,0.52734 -1.16406,0.625 -1.6914,0.21875 l -20.41016,-15.70703 c -0.52734,-0.40625 -0.625,-1.16407 -0.21875,-1.69141 l 2.79297,-3.62891 c 0.40625,-0.53125 1.16406,-0.6289 1.69141,-0.22265 l 20.41015,15.70703 c 0.52735,0.40625 0.625,1.16406 0.21875,1.69141 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 217.53125,383.20312 c -0.40625,0.52735 -1.16406,0.625 -1.69141,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16015 -0.21875,-1.6875 l 2.79687,-3.63672 c 0.40235,-0.52734 1.16016,-0.625 1.6875,-0.21484 l 20.41016,15.70703 c 0.52734,0.40235 0.625,1.16016 0.22265,1.6875 l -2.79687,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 212.06641,390.30078 c -0.40625,0.52734 -1.16016,0.62891 -1.6875,0.22266 l -20.41016,-15.70703 c -0.53125,-0.41016 -0.625,-1.16407 -0.22266,-1.69532 l 2.79688,-3.6289 c 0.40625,-0.52735 1.16015,-0.625 1.6875,-0.21875 l 20.41406,15.70703 c 0.52734,0.40625 0.625,1.16015 0.21875,1.6875 l -2.79687,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 206.60547,397.40234 c -0.41016,0.52735 -1.16406,0.625 -1.69141,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16015 -0.22266,-1.6875 l 2.79687,-3.63281 c 0.40625,-0.52734 1.16407,-0.62891 1.69141,-0.22266 l 20.41016,15.70703 c 0.52734,0.40625 0.625,1.16407 0.21875,1.69141 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 242.65625,358.73047 c 0,12.92969 -10.48047,23.41015 -23.41406,23.41015 -12.92969,0 -23.41016,-10.48046 -23.41016,-23.41015 0,-12.92969 10.48047,-23.41406 23.41016,-23.41406 12.93359,0 23.41406,10.48437 23.41406,23.41406",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({d:"m 274.41406,315.41016 c 0,12.92968 -10.48047,23.41406 -23.41015,23.41406 -12.9336,0 -23.41407,-10.48438 -23.41407,-23.41406 0,-12.92969 10.48047,-23.41016 23.41407,-23.41016 12.92968,0 23.41015,10.48047 23.41015,23.41016",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+        end().svg
+      );
+      return @element;
+    }
+    static init = (function() {
+      var styles = [
+        {selector:'.ninja',style:"position:absolute;-webkit-transition:-webkit-transform 0.3s linear;-webkit-transform:scale(0.6,0.6);"}
+      ];
+      monads.Styleable(styles).on("load").onstyle();
+    })()
   }
   class Multiply {
     constructor() {
@@ -337,7 +426,7 @@ log.Logger.debug(this,'onend');
               stop({style:"stop-opacity:1;stop-color:#ffffff",offset:"1"}).end().
             end().
           end().
-          g({transform:"matrix(0.5,0,0,-0.5,-10.0,400.0)"}).
+          g({transform:"matrix(0.5,0,0,-0.5,-40.0,410.0)"}).
             g({'clip-path':"url(#"+@id+"clipPath2346)"}).
               path({d:"m 316.271,471.327 -170.078,0 c -34.388,0 -62.364,27.977 -62.364,62.365 l 0,170.077 c 0,34.385 27.976,62.361 62.364,62.361 l 170.078,0 c 34.388,0 62.363,-27.976 62.363,-62.361 l 0,-170.077 c 0,-34.388 -27.975,-62.365 -62.363,-62.365",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
             end().
@@ -540,7 +629,7 @@ log.Logger.debug(this,'onend');
               stop({style:"stop-opacity:1;stop-color:#ffffff",offset:"1"}).end().
             end().
           end().
-          g({transform:"matrix(0.5,0,0,-0.5,-10.0,210.0)"}).
+          g({transform:"matrix(0.5,0,0,-0.5,-40.0,215.0)"}).
             g({'clip-path':"url(#"+@id+"clipPath7254)"}).
               path({d:"m 316.272,83.69 -170.079,0 c -34.388,0 -62.363,27.977 -62.363,62.366 l 0,170.078 c 0,34.385 27.975,62.36 62.363,62.36 l 170.079,0 c 34.388,0 62.364,-27.975 62.364,-62.36 l 0,-170.078 c 0,-34.389 -27.976,-62.366 -62.364,-62.366",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
             end().
@@ -594,7 +683,7 @@ log.Logger.debug(this,'onend');
       this.onchoose = this.onchoose.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
       controller.Controller.subscribe('choose',this.onchoose);
-      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'minus'}).add(
+      @element = monads.DOMable({tagName:'div'}).on('load').add(
         svg.Svg({width:"350.0",height:"270.0"}).
           defs().
             clipPath({clipPathUnits:"userSpaceOnUse",id:@id+"clipPath9698"}).
@@ -637,7 +726,7 @@ log.Logger.debug(this,'onend');
               stop({style:"stop-opacity:1;stop-color:#ffffff",offset:"1"}).end().
             end().
           end().
-          g({transform:"matrix(0.5,0,0,-0.5,-220.0,220.0)"}).
+          g({transform:"matrix(0.5,0,0,-0.5,-230.0,215.0)"}).
             g({'clip-path':"url(#"+@id+"clipPath9698)"}).
               path({d:"m 703.906,83.69 -170.079,0 c -34.387,0 -62.363,27.977 -62.363,62.366 l 0,170.078 c 0,34.385 27.976,62.36 62.363,62.36 l 170.079,0 c 34.39,0 62.365,-27.975 62.365,-62.36 l 0,-170.078 c 0,-34.389 -27.975,-62.366 -62.365,-62.366",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
             end().
@@ -678,12 +767,14 @@ log.Logger.debug(this,'onend');
     ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:{'operation':'minus','color':'#90969d'}}));
     }
+/*
     static init = (function() {
       var styles = [
         {selector:'.inner .minus',style:"-webkit-transition:-webkit-transform 0.3s linear;-webkit-transform:translateX(120px) translateY(-10px) translateZ(100px);"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
+*/
   }
   class Shuriken {
     constructor() {
@@ -734,57 +825,159 @@ log.Logger.debug(this,'onend');
       monads.Styleable(styles).on("load").onstyle();
     })()
   }
+  export class Container {
+    constructor(properties={}) {
+      private element, cube, front, back, right, left, top, bottom;
+      @cube = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'cube'});
+      @front = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'front'});
+      properties.front && @front.add(properties.front);
+      @back = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'back'});
+      properties.back && @back.add(properties.back);
+      @right = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'right'});
+      properties.right && @right.add(properties.right);
+      @left = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'left'});
+      properties.left && @left.add(properties.left);
+      @top = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'top'});
+      properties.top && @top.add(properties.top);
+      @bottom = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'bottom'});
+      properties.bottom && @bottom.add(properties.bottom);
+      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'container'}).add(
+	@cube.
+          add(
+            @front
+          ).add(
+	    @back
+          ).add(
+	    @right
+          ).add(
+	    @left
+          ).add(
+	    @top
+          ).add(
+	    @bottom
+          )
+      );
+    }
+    showFront() {
+      @cube.attributes({'class':'show-front'});
+      return this;
+    }
+    showRight() {
+      @cube.attributes({'class':'show-right'});
+      return this;
+    }
+    showLeft() {
+      @cube.attributes({'class':'show-left'});
+      return this;
+    }
+    showBack() {
+      @cube.attributes({'class':'show-back'});
+      return this;
+    }
+    showTop() {
+      @cube.attributes({'class':'show-top'});
+      return this;
+    }
+    showBottom() {
+      @cube.attributes({'class':'show-bottom'});
+      return this;
+    }
+    static init = (function() {
+      var styles = [
+        {selector:'.container',style:"top:25%;width:200px;height:200px;position:relative;margin:0 auto 40px;-webkit-perspective:1000px;"},
+        {selector:'#cube',style:"width:100%;height:100%;position:absolute;-webkit-transform-style:preserve-3d;-webkit-transition:-webkit-transform 1s;"},
+        {selector:'#cube.show-front',style:"-webkit-transform:translateZ(-100px);"},
+        {selector:'#cube.show-back',style:"-webkit-transform:translateZ(-100px) rotateX(-180deg);"},
+        {selector:'#cube.show-right',style:"-webkit-transform:translateZ(-100px) rotateY(-90deg);"},
+        {selector:'#cube.show-left',style:"-webkit-transform:translateZ(-100px) rotateY(90deg);"},
+        {selector:'#cube.show-top',style:"-webkit-transform:translateZ(-100px) rotateX(-90deg);"},
+        {selector:'#cube.show-bottom',style:"-webkit-transform:translateZ(-100px) rotateX(90deg);"},
+        {selector:'#cube div',style:"display:block;position:absolute;width:196px;height:196px;-webkit-backface-visibility:hidden;"},
+        {selector:'#cube .front',style:"-webkit-transform:translateZ(100px);"},
+        {selector:'#cube .back',style:"-webkit-transform:rotateX(-180deg) translateZ(100px);"},
+        {selector:'#cube .right',style:"-webkit-transform:rotateY(90deg) translateZ(100px);"},
+        {selector:'#cube .left',style:"-webkit-transform:rotateY(-90deg) translateZ(100px);"},
+        {selector:'#cube .top',style:"-webkit-transform:rotateX(90deg) translateZ(100px);"},
+        {selector:'#cube .bottom',style:"-webkit-transform:rotateX(-90deg) translateZ(100px);"}
+      ];
+      monads.Styleable(styles).on("load").onstyle();
+    })()
+  };
   class Main {
     constructor() {
-      private container, checker, color, difficulty, divide, frame, level, minus, multiply, equation, operation, problems, play, plus, shuriken, sparkles, title;
+      private container, checker, color, difficulty, difficultyChoice, equation, frame, levels, ninja, operation, problems, play, screens, shuriken, sparkles, title;
       this.ontouchstart = this.ontouchstart.bind(this);
       this.ontouchmove = this.ontouchmove.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
       this.ontimeout = this.ontimeout.bind(this);
       this.onplay = this.onplay.bind(this);
+      this.onlevel = this.onlevel.bind(this);
       this.ondifficulty = this.ondifficulty.bind(this);
       controller.Controller.subscribe('timeout',this.ontimeout);
       controller.Controller.subscribe('play',this.onplay);
       controller.Controller.subscribe('difficulty',this.ondifficulty);
-      @level = 'easy';
+      controller.Controller.subscribe('level',this.onlevel);
+      @screens = Container({front:Levels()}).showFront();
+      @levels = Levels();
+      @difficultyChoice = 'easy';
       @title = Title();
       @checker = Checker();
       @difficulty = Difficulty();
-      @minus = Minus();
       @play = Play();
-      @plus = Plus();
       @problems = [];
-      @divide = Divide();
-      @multiply = Multiply();
       @shuriken = Shuriken();
+      @ninja = Ninja();
       @frame = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'frame'}).add(
         monads.DOMable({tagName:'div'}).on('load').attributes({'class':'inner'}).add(
           @title
         ).add(
           @play
-        ).add(
-          @multiply
-        ).add(
-          @plus
-        ).add(
-          @divide
-        ).add(
-          @minus
-        ).add(
-          monads.DOMable({tagName:'div'}).on('load').attributes({'class':'e'})
-        ).add(
-          monads.DOMable({tagName:'div'}).on('load').attributes({'class':'f'})
+/*
         ).add(
           @difficulty
+*/
         )
       );
-      @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(@frame).insert(document.body);
-//      @shuriken.insert(document.body);
+      @ninja.insert(document.body);
+      @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(
+        @frame
+      ).insert(document.body);
+      @screens.element.insert(document.body);
       monads.DOMable({element:document.body}).on('touchstart',this.ontouchstart).on('touchmove',this.ontouchmove).on(['touchend','click'],this.ontouchend);
-log.Logger.debug(this,'clientWidth='+document.documentElement.clientWidth);
     }
     ondifficulty(event) {
-      @level = event.detail;
+      @difficultyChoice = event.detail;
+    }
+    onlevel(event) {
+      var plus = Plus(), minus, multiply, divide;
+      switch(event.detail) {
+        case "1":
+          @screens.right.add(plus);
+          break;
+        case "2":
+          minus = Minus();
+          @screens.right.add(plus).add(minus);
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s','-webkit-transform':'translateX(75%)'})},500);
+          break;
+        case "3":
+          minus = Minus();
+          multiply = Multiply();
+          @screens.right.add(plus).add(minus).add(multiply);
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s','-webkit-transform':'translateX(75%)'})},500);
+          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s','-webkit-transform':'translateX(150%)'})},1000);
+          break;
+        case "4":
+        default:
+          minus = Minus();
+          multiply = Multiply();
+          divide = Divide();
+          @screens.right.add(plus).add(minus).add(multiply).add(divide);
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s','-webkit-transform':'translateX(73%)'})},500);
+          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s','-webkit-transform':'translateX(150%)'})},1000);
+          setTimeout(function(){divide.style({'-webkit-transition':'-webkit-transform 1s','-webkit-transform':'translateX(225%)'})},1500);
+          break;
+      }
+      @screens.showRight();
     }
     onplay(event) {
       @color = event.detail.color, @operation = event.detail.operation;
@@ -795,9 +988,9 @@ log.Logger.debug(this,'clientWidth='+document.documentElement.clientWidth);
       @divide.style({'-webkit-transform':'rotateY(213deg) translateX(40px) translateZ(80px)'});
       @plus.style({'-webkit-transform':'rotateY(90deg) translateX(206px) translateZ(300px) rotateY(-70.5deg)'});
       @difficulty.style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg) rotateX(110deg)'});
-      ProgressBar({time:@level==='easy'?8:5}).start();
+      ProgressBar({time:@difficultyChoice==='easy'?8:5}).start();
       @sparkles = Sparkles();
-      @equation = Equation({operation:@operation,level:@level,color:@color});
+      @equation = Equation({operation:@operation,difficultyChoice:@difficultyChoice,color:@color});
       @equation.instance.element.insert(document.body);
       @problems.push(@equation);
     }
@@ -811,7 +1004,7 @@ log.Logger.debug(this,'x='+x+' y='+y);
       correct && @sparkles.addSparkles(Math.random()*200+100|0, x, y, 2);
       @checker.answer(correct);
       @equation.instance.element.remove();
-      @equation = Equation({operation:@operation,level:@level,color:@color});
+      @equation = Equation({operation:@operation,difficultyChoice:@difficultyChoice,color:@color});
       @equation.instance.element.insert(document.body);
       @problems.push(@equation);
     }
@@ -840,8 +1033,8 @@ log.Logger.debug(this,'x='+x+' y='+y);
     ]
     static init = (function() {
       var styles = [
-        {selector:'@font-face',style:'font-family:Bender;src:url(/cube/lib/Bender-Solid.otf);'},
-        {selector:'body',style:"background:-webkit-gradient(radial, 48% 30%, 0, 48% 30%, 350, from(rgba(0,0,255,0)), to(rgba(0,0,0,1)));margin:0;padding:0;"},
+        {selector:'@font-face',style:'font-family:Albertino;src:url(/cube/lib/Albertino_1.0.ttf);'},
+        {selector:'body',style:"background:white"},
         {selector:'#container',style:"position:absolute;left:45%;margin-left:-100px;top:35%;margin-top:-100px;height:200px;width:200px;-webkit-perspective:800;"},
         {selector:'#frame',style:"opacity: 1.0;width: 200px;-webkit-transform-style: preserve-3d;-webkit-transform: translateZ(150px);-webkit-transition: all 0.5s linear;"},
         {selector:'.inner',style:"height:200px;width:200px;-webkit-transform-style: preserve-3d;-webkit-transform: rotateY(230deg);"},
