@@ -12,7 +12,7 @@ module cube {
       @onimageload = @onimageload.bind(this);
       @tick = @tick.bind(this);
       @imgSeq = new Image();
-      @element = monads.DOMable({tagName:'canvas'}).on('load').attributes({'id':'testCanvas',width:'980',height:'680'}).style({'background-color':'transparent','left':'20%','position':'absolute'}).insert(document.body).element();
+      @element = monads.DOMable({tagName:'canvas'}).on('load').attributes({'id':'testCanvas',width:'980',height:'680'}).style({'background-color':'transparent','left':'20%','position':'absolute','z-index':'-100'}).insert(document.body).element();
       @stage = canvas.Stage({autoClear:false,canvas:@element});
       @imgSeq.onload = @onimageload;
       @imgSeq.src = "img/sparkle_21x23.png";
@@ -106,7 +106,7 @@ log.Logger.debug(this,'onend');
       @guessindex = 0;
       @operation = properties.operation;
       @sections = @equation;
-      @sections.element.style({'font-family':'Albertino','color':properties.color}).textShadow(Main.shadow);
+      @sections.element.style({'font-family':'Albertino','color':properties.color}).textShadow(Main.shadow).translate({x:'-190%',y:'-100%'});
       monads.Styleable([{selector:'.sections > .section > .carousel > .field',style:"color:"+properties.color+";"}]).on("load").onstyle();
       @sections.sections[4].element.on(['touchend','click'],this.onnext);
     }
@@ -192,8 +192,8 @@ log.Logger.debug(this,'onend');
     }
     static init = (function() {
       var styles = [
-        {selector:'.sections > .section',style:"border:0;width:200px;"},
-        {selector:'.sections > .section > .carousel > .field',style:"font-size:7em;background:rgba(0,0,0,0);border:0;width:200px;"}
+        {selector:'.sections > .section',style:"border:0;width:170px;"},
+        {selector:'.sections > .section > .carousel > .field',style:"font-size:6em;background:rgba(0,0,0,0);border:0;width:170px;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
@@ -327,10 +327,9 @@ log.Logger.debug(this,'publishing 4');
   }
   class Ninja {
     constructor() {
-      private element, id;
-      @id = Math.uuid(8);
-      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'ninja'}).add(
-        svg.Svg({xmlns:"http://www.w3.org/2000/svg",width:"428pt",height:"596pt"}).
+      private element, id, leftArm, ninja;
+      @id = 'ninja';
+      @ninja = svg.Svg({id:@id,width:"428pt",height:"596pt"}).
           path({d:"m 310.83594,189.77734 c 0,45.51172 -39.77344,82.40235 -88.83203,82.40235 -49.0625,0 -88.83204,-36.89063 -88.83204,-82.40235 0,-45.51172 39.76954,-82.40234 88.83204,-82.40234 49.05859,0 88.83203,36.89062 88.83203,82.40234",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           path({d:"m 303.28125,183.76953 c 0,0 -49.76172,-31.14062 -111.14063,-31.14062 -19.16015,0 -37.18359,3.03125 -52.91796,7.20312 -3.90625,9.28125 -6.05079,19.38281 -6.05079,29.94531 0,4.21875 0.34375,8.36328 1.00391,12.41016 16.875,3.98828 62.8125,5.55469 84.05078,5.55469 61.38281,0 85.05469,-23.97266 85.05469,-23.97266",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           path({d:"m 174.65625,186.03516 c 0,5.07031 -5.61719,9.17968 -12.54688,9.17968 -6.92578,0 -12.54687,-4.10937 -12.54687,-9.17968 0,-5.07032 5.62109,-9.17969 12.54687,-9.17969 6.92969,0 12.54688,4.10937 12.54688,9.17969",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
@@ -340,29 +339,46 @@ log.Logger.debug(this,'publishing 4');
           path({d:"m 268.62891,265.14453 c -13.90235,8.49219 -30.23438,13.38281 -47.70313,13.38281 -18.50391,0 -35.72266,-5.49218 -50.13672,-14.92578 -31.01172,13.26172 -31.01172,42.79297 -31.01172,77.08985 0,15.28125 0,32.40234 0,47.67968 0,46.70313 0,84.5586 78.27735,84.5586 78.27343,0 78.27343,-37.85547 78.27343,-84.5586 0,-15.27734 0,-32.39843 0,-47.67968 0,-33.02735 -0.008,-61.62891 -27.69921,-75.54688",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           path({d:"m 213.17187,485.82422 c 0,11.35156 -66.84765,11.35156 -66.84765,0 0,-11.35156 14.96484,-20.55078 33.42187,-20.55078 18.46094,0 33.42578,9.19922 33.42578,20.55078",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           path({d:"m 289.78125,485.82422 c 0,11.35156 -66.84766,11.35156 -66.84766,0 0,-11.35156 14.96485,-20.55078 33.42578,-20.55078 18.45704,0 33.42188,9.19922 33.42188,20.55078",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 219.74219,315.99609 c -0.92578,-12.28515 23.97265,-32.1875 53.89453,-34.4414 29.92578,-2.25391 48.6914,5.23047 54.47265,26.28125 6.30079,22.95703 -26.07421,36.73437 -56,38.98828 -29.92187,2.2539 -51.4414,-18.53906 -52.36718,-30.82813",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 213.44531,350.26172 c -3.91406,11.6875 -34.57812,20.375 -63.03515,10.85156 -28.45703,-9.52734 -42.84766,-23.70312 -40.01563,-45.35156 3.09375,-23.60156 38.28125,-23.7461 66.73828,-14.21875 28.45313,9.52344 40.22656,37.03125 36.3125,48.71875",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 230.35547,362.66406 c -2.58594,3.38672 -7.42188,4.03516 -10.8086,1.45313 l -6,-4.57813 c -3.38671,-2.58203 -4.03515,-7.42187 -1.45312,-10.80859 L 399.86719,102.63281 c 2.58203,-3.386716 6.80468,28.94531 6.80468,28.94531 l -176.3164,231.08594",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 283.09766,298.00781 c -0.40625,0.52344 -1.16407,0.625 -1.69141,0.21875 l -20.41016,-15.70703 c -0.52734,-0.40625 -0.625,-1.16406 -0.21875,-1.69141 l 2.79297,-3.63281 c 0.41016,-0.52734 1.16406,-0.625 1.69531,-0.21875 l 20.40625,15.70703 c 0.52735,0.40625 0.62891,1.16407 0.22266,1.69141 l -2.79687,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 277.63281,305.10547 c -0.40625,0.52734 -1.16015,0.625 -1.6914,0.21875 l -20.41016,-15.70703 c -0.52734,-0.40235 -0.625,-1.16016 -0.21875,-1.6875 l 2.79297,-3.63282 c 0.41015,-0.52734 1.16406,-0.625 1.69531,-0.22265 l 20.41016,15.70703 c 0.52343,0.40625 0.625,1.16406 0.21875,1.69141 l -2.79688,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 272.17187,312.20312 c -0.40625,0.52735 -1.16406,0.62891 -1.6914,0.22266 l -20.41016,-15.70703 c -0.52734,-0.40625 -0.625,-1.16406 -0.21875,-1.69141 l 2.79297,-3.63281 c 0.40625,-0.52734 1.16406,-0.625 1.69141,-0.21875 l 20.41015,15.70703 c 0.52735,0.40625 0.625,1.16406 0.21875,1.69141 l -2.79297,3.6289",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 266.70703,319.30469 c -0.40625,0.52734 -1.16406,0.625 -1.69141,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16407 -0.21875,-1.69141 l 2.79687,-3.63281 c 0.40235,-0.52344 1.16016,-0.625 1.6875,-0.21875 l 20.41016,15.70703 c 0.52734,0.40625 0.62891,1.16406 0.22266,1.6914 l -2.79688,3.63282",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 261.24219,326.40234 c -0.40625,0.52735 -1.16407,0.62891 -1.69141,0.22266 l -20.40625,-15.70703 c -0.53125,-0.40625 -0.62891,-1.16406 -0.22266,-1.69141 l 2.79688,-3.63281 c 0.40234,-0.52734 1.16406,-0.625 1.6875,-0.21875 l 20.41016,15.70703 c 0.53125,0.40625 0.6289,1.16016 0.22265,1.69141 l -2.79687,3.6289",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 255.77734,333.50391 c -0.40625,0.52734 -1.16015,0.6289 -1.6914,0.21875 l -20.40625,-15.70704 c -0.53125,-0.40234 -0.62891,-1.16015 -0.22266,-1.6875 l 2.79688,-3.63281 c 0.40625,-0.52734 1.16015,-0.6289 1.6875,-0.22265 l 20.41406,15.70703 c 0.52734,0.41015 0.625,1.16406 0.21875,1.6914 l -2.79688,3.63282",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 250.3125,340.60547 c -0.40625,0.52734 -1.16016,0.625 -1.69141,0.21875 l -20.40625,-15.70703 c -0.52734,-0.40625 -0.625,-1.16407 -0.22265,-1.6875 l 2.79687,-3.63282 c 0.40625,-0.53125 1.16406,-0.6289 1.69141,-0.22265 l 20.41015,15.70703 c 0.52735,0.40625 0.625,1.16406 0.21875,1.69141 l -2.79687,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 244.85156,347.70312 c -0.40625,0.52735 -1.16406,0.62891 -1.6914,0.22266 L 222.75,332.21875 c -0.52734,-0.40625 -0.625,-1.16406 -0.21875,-1.69531 l 2.79297,-3.62891 c 0.40625,-0.52734 1.16406,-0.625 1.6914,-0.21875 l 20.41016,15.70703 c 0.52734,0.40625 0.625,1.16016 0.21875,1.6875 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 239.39062,354.80469 c -0.41015,0.52734 -1.16406,0.625 -1.69531,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16407 -0.21875,-1.69141 l 2.79687,-3.63281 c 0.40625,-0.52735 1.16016,-0.625 1.69141,-0.21875 l 20.40625,15.70703 c 0.52734,0.40625 0.6289,1.16406 0.22265,1.6914 l -2.79297,3.63282",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 233.92578,361.90234 c -0.41016,0.52735 -1.16406,0.62891 -1.69531,0.22266 l -20.41016,-15.71094 c -0.52344,-0.40234 -0.625,-1.16015 -0.21875,-1.6875 l 2.79688,-3.63281 c 0.40625,-0.52734 1.16406,-0.625 1.6914,-0.22266 l 20.40625,15.70703 c 0.53125,0.40625 0.62891,1.16407 0.22266,1.69141 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 228.46094,369.00391 c -0.40625,0.52734 -1.16407,0.625 -1.69141,0.21875 l -20.41016,-15.70704 c -0.52734,-0.40625 -0.6289,-1.16406 -0.21875,-1.6914 l 2.79297,-3.63281 c 0.40625,-0.52344 1.16407,-0.625 1.69141,-0.21875 l 20.40625,15.70703 c 0.53125,0.40625 0.62891,1.16406 0.22266,1.6914 l -2.79297,3.63282",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 222.99609,376.10547 c -0.40625,0.52734 -1.16406,0.625 -1.6914,0.21875 l -20.41016,-15.70703 c -0.52734,-0.40625 -0.625,-1.16407 -0.21875,-1.69141 l 2.79297,-3.62891 c 0.40625,-0.53125 1.16406,-0.6289 1.69141,-0.22265 l 20.41015,15.70703 c 0.52735,0.40625 0.625,1.16406 0.21875,1.69141 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 217.53125,383.20312 c -0.40625,0.52735 -1.16406,0.625 -1.69141,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16015 -0.21875,-1.6875 l 2.79687,-3.63672 c 0.40235,-0.52734 1.16016,-0.625 1.6875,-0.21484 l 20.41016,15.70703 c 0.52734,0.40235 0.625,1.16016 0.22265,1.6875 l -2.79687,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 212.06641,390.30078 c -0.40625,0.52734 -1.16016,0.62891 -1.6875,0.22266 l -20.41016,-15.70703 c -0.53125,-0.41016 -0.625,-1.16407 -0.22266,-1.69532 l 2.79688,-3.6289 c 0.40625,-0.52735 1.16015,-0.625 1.6875,-0.21875 l 20.41406,15.70703 c 0.52734,0.40625 0.625,1.16015 0.21875,1.6875 l -2.79687,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 206.60547,397.40234 c -0.41016,0.52735 -1.16406,0.625 -1.69141,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16015 -0.22266,-1.6875 l 2.79687,-3.63281 c 0.40625,-0.52734 1.16407,-0.62891 1.69141,-0.22266 l 20.41016,15.70703 c 0.52734,0.40625 0.625,1.16407 0.21875,1.69141 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 242.65625,358.73047 c 0,12.92969 -10.48047,23.41015 -23.41406,23.41015 -12.92969,0 -23.41016,-10.48046 -23.41016,-23.41015 0,-12.92969 10.48047,-23.41406 23.41016,-23.41406 12.93359,0 23.41406,10.48437 23.41406,23.41406",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-          path({d:"m 274.41406,315.41016 c 0,12.92968 -10.48047,23.41406 -23.41015,23.41406 -12.9336,0 -23.41407,-10.48438 -23.41407,-23.41406 0,-12.92969 10.48047,-23.41016 23.41407,-23.41016 12.92968,0 23.41015,10.48047 23.41015,23.41016",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
-        end().svg
-      );
-      return @element;
+          path({id:'leftArm',d:"m 219.74219,315.99609 c -0.92578,-12.28515 23.97265,-32.1875 53.89453,-34.4414 29.92578,-2.25391 48.6914,5.23047 54.47265,26.28125 6.30079,22.95703 -26.07421,36.73437 -56,38.98828 -29.92187,2.2539 -51.4414,-18.53906 -52.36718,-30.82813",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          path({id:'rightArm',d:"m 213.44531,350.26172 c -3.91406,11.6875 -34.57812,20.375 -63.03515,10.85156 -28.45703,-9.52734 -42.84766,-23.70312 -40.01563,-45.35156 3.09375,-23.60156 38.28125,-23.7461 66.73828,-14.21875 28.45313,9.52344 40.22656,37.03125 36.3125,48.71875",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          g({id:'sword'}).
+            path({d:"m 230.35547,362.66406 c -2.58594,3.38672 -7.42188,4.03516 -10.8086,1.45313 l -6,-4.57813 c -3.38671,-2.58203 -4.03515,-7.42187 -1.45312,-10.80859 L 399.86719,102.63281 c 2.58203,-3.386716 6.80468,28.94531 6.80468,28.94531 l -176.3164,231.08594",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 283.09766,298.00781 c -0.40625,0.52344 -1.16407,0.625 -1.69141,0.21875 l -20.41016,-15.70703 c -0.52734,-0.40625 -0.625,-1.16406 -0.21875,-1.69141 l 2.79297,-3.63281 c 0.41016,-0.52734 1.16406,-0.625 1.69531,-0.21875 l 20.40625,15.70703 c 0.52735,0.40625 0.62891,1.16407 0.22266,1.69141 l -2.79687,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 277.63281,305.10547 c -0.40625,0.52734 -1.16015,0.625 -1.6914,0.21875 l -20.41016,-15.70703 c -0.52734,-0.40235 -0.625,-1.16016 -0.21875,-1.6875 l 2.79297,-3.63282 c 0.41015,-0.52734 1.16406,-0.625 1.69531,-0.22265 l 20.41016,15.70703 c 0.52343,0.40625 0.625,1.16406 0.21875,1.69141 l -2.79688,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 272.17187,312.20312 c -0.40625,0.52735 -1.16406,0.62891 -1.6914,0.22266 l -20.41016,-15.70703 c -0.52734,-0.40625 -0.625,-1.16406 -0.21875,-1.69141 l 2.79297,-3.63281 c 0.40625,-0.52734 1.16406,-0.625 1.69141,-0.21875 l 20.41015,15.70703 c 0.52735,0.40625 0.625,1.16406 0.21875,1.69141 l -2.79297,3.6289",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 266.70703,319.30469 c -0.40625,0.52734 -1.16406,0.625 -1.69141,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16407 -0.21875,-1.69141 l 2.79687,-3.63281 c 0.40235,-0.52344 1.16016,-0.625 1.6875,-0.21875 l 20.41016,15.70703 c 0.52734,0.40625 0.62891,1.16406 0.22266,1.6914 l -2.79688,3.63282",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 261.24219,326.40234 c -0.40625,0.52735 -1.16407,0.62891 -1.69141,0.22266 l -20.40625,-15.70703 c -0.53125,-0.40625 -0.62891,-1.16406 -0.22266,-1.69141 l 2.79688,-3.63281 c 0.40234,-0.52734 1.16406,-0.625 1.6875,-0.21875 l 20.41016,15.70703 c 0.53125,0.40625 0.6289,1.16016 0.22265,1.69141 l -2.79687,3.6289",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 255.77734,333.50391 c -0.40625,0.52734 -1.16015,0.6289 -1.6914,0.21875 l -20.40625,-15.70704 c -0.53125,-0.40234 -0.62891,-1.16015 -0.22266,-1.6875 l 2.79688,-3.63281 c 0.40625,-0.52734 1.16015,-0.6289 1.6875,-0.22265 l 20.41406,15.70703 c 0.52734,0.41015 0.625,1.16406 0.21875,1.6914 l -2.79688,3.63282",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 250.3125,340.60547 c -0.40625,0.52734 -1.16016,0.625 -1.69141,0.21875 l -20.40625,-15.70703 c -0.52734,-0.40625 -0.625,-1.16407 -0.22265,-1.6875 l 2.79687,-3.63282 c 0.40625,-0.53125 1.16406,-0.6289 1.69141,-0.22265 l 20.41015,15.70703 c 0.52735,0.40625 0.625,1.16406 0.21875,1.69141 l -2.79687,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 244.85156,347.70312 c -0.40625,0.52735 -1.16406,0.62891 -1.6914,0.22266 L 222.75,332.21875 c -0.52734,-0.40625 -0.625,-1.16406 -0.21875,-1.69531 l 2.79297,-3.62891 c 0.40625,-0.52734 1.16406,-0.625 1.6914,-0.21875 l 20.41016,15.70703 c 0.52734,0.40625 0.625,1.16016 0.21875,1.6875 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 239.39062,354.80469 c -0.41015,0.52734 -1.16406,0.625 -1.69531,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16407 -0.21875,-1.69141 l 2.79687,-3.63281 c 0.40625,-0.52735 1.16016,-0.625 1.69141,-0.21875 l 20.40625,15.70703 c 0.52734,0.40625 0.6289,1.16406 0.22265,1.6914 l -2.79297,3.63282",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 233.92578,361.90234 c -0.41016,0.52735 -1.16406,0.62891 -1.69531,0.22266 l -20.41016,-15.71094 c -0.52344,-0.40234 -0.625,-1.16015 -0.21875,-1.6875 l 2.79688,-3.63281 c 0.40625,-0.52734 1.16406,-0.625 1.6914,-0.22266 l 20.40625,15.70703 c 0.53125,0.40625 0.62891,1.16407 0.22266,1.69141 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 228.46094,369.00391 c -0.40625,0.52734 -1.16407,0.625 -1.69141,0.21875 l -20.41016,-15.70704 c -0.52734,-0.40625 -0.6289,-1.16406 -0.21875,-1.6914 l 2.79297,-3.63281 c 0.40625,-0.52344 1.16407,-0.625 1.69141,-0.21875 l 20.40625,15.70703 c 0.53125,0.40625 0.62891,1.16406 0.22266,1.6914 l -2.79297,3.63282",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 222.99609,376.10547 c -0.40625,0.52734 -1.16406,0.625 -1.6914,0.21875 l -20.41016,-15.70703 c -0.52734,-0.40625 -0.625,-1.16407 -0.21875,-1.69141 l 2.79297,-3.62891 c 0.40625,-0.53125 1.16406,-0.6289 1.69141,-0.22265 l 20.41015,15.70703 c 0.52735,0.40625 0.625,1.16406 0.21875,1.69141 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 217.53125,383.20312 c -0.40625,0.52735 -1.16406,0.625 -1.69141,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16015 -0.21875,-1.6875 l 2.79687,-3.63672 c 0.40235,-0.52734 1.16016,-0.625 1.6875,-0.21484 l 20.41016,15.70703 c 0.52734,0.40235 0.625,1.16016 0.22265,1.6875 l -2.79687,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 212.06641,390.30078 c -0.40625,0.52734 -1.16016,0.62891 -1.6875,0.22266 l -20.41016,-15.70703 c -0.53125,-0.41016 -0.625,-1.16407 -0.22266,-1.69532 l 2.79688,-3.6289 c 0.40625,-0.52735 1.16015,-0.625 1.6875,-0.21875 l 20.41406,15.70703 c 0.52734,0.40625 0.625,1.16015 0.21875,1.6875 l -2.79687,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 206.60547,397.40234 c -0.41016,0.52735 -1.16406,0.625 -1.69141,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16015 -0.22266,-1.6875 l 2.79687,-3.63281 c 0.40625,-0.52734 1.16407,-0.62891 1.69141,-0.22266 l 20.41016,15.70703 c 0.52734,0.40625 0.625,1.16407 0.21875,1.69141 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 242.65625,358.73047 c 0,12.92969 -10.48047,23.41015 -23.41406,23.41015 -12.92969,0 -23.41016,-10.48046 -23.41016,-23.41015 0,-12.92969 10.48047,-23.41406 23.41016,-23.41406 12.93359,0 23.41406,10.48437 23.41406,23.41406",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+            path({d:"m 274.41406,315.41016 c 0,12.92968 -10.48047,23.41406 -23.41015,23.41406 -12.9336,0 -23.41407,-10.48438 -23.41407,-23.41406 0,-12.92969 10.48047,-23.41016 23.41407,-23.41016 12.92968,0 23.41015,10.48047 23.41015,23.41016",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+      end();
+//      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'ninja'}).style({'-webkit-box-reflect':'below -77%  -webkit-gradient(linear,left top,left bottom,from(transparent),to(rgba(255,255,255,0.25)))'}).add(@ninja.svg);
+      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'ninja'}).reflect('-77%').add(@ninja.svg);
+      @leftArm = @ninja.svg.getElementById('leftArm');
+    }
+    raiseSword() {
+      @ninja.animateMotion({'xlink:href':'#sword','path':"m 0,0 l 2,2 4,-4 32,-32 64,-64",'dur':"3s",'repeatCount':"1",'rotate':"0",'fill':"freeze"}).end().
+        animateTransform({'xlink:href':'#sword','attributeName':'transform','attributeType':'XML','type':'rotate','from':'0','to':'20','dur':'3s','additive':'replace','fill':"freeze"}).end().
+        animateMotion({'xlink:href':'#rightArm','path':"m 0,0 l 0,-2 0,-4 0,-12",'dur':"3s",'repeatCount':"1",'rotate':"0",'fill':"freeze"}).end().
+        animateMotion({'xlink:href':'#leftArm','path':"m 0,0 l 0,2 0,4 0,12",'dur':"3s",'repeatCount':"1",'rotate':"0",'fill':"freeze"}).end();
+//        animateTransform({'xlink:href':'#leftArm','attributeName':'transform','attributeType':'XML','type':'rotate','from':'0','to':'20','dur':'3s','additive':'replace','fill':"freeze"}).end();
+      @leftArm.style.webkitTransition = '-webkit-transform 3s';
+      @leftArm.style.webkitTransformOriginX = '219';
+      @leftArm.style.webkitTransformOriginY = '315';
+      @leftArm.style.webkitTransform = 'rotate(10deg) translate(-10px,-10px)';
+// -webkit-transform: rotate(10deg) translate(-10px,-10px);
+// -webkit-transition: -webkit-transform 1s;
+// -webkit-transform-origin-x: 219;
+// -webkit-transform-origin-y: 315;
     }
     static init = (function() {
       var styles = [
@@ -376,9 +392,7 @@ log.Logger.debug(this,'publishing 4');
       private element, id, selected;
       @id = Math.uuid(8);
       @selected = false;
-      @onchoose = @onchoose.bind(this);
       @ontouchend = @ontouchend.bind(this);
-      controller.Controller.subscribe('choose',this.onchoose);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'multiply'}).add(
         svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"200.0",height:"200.0"}).
           defs().
@@ -448,29 +462,16 @@ log.Logger.debug(this,'publishing 4');
             path({d:"m 261.297,618.729 30.066,30.066 c 8.27,8.27 8.268,21.797 0,30.066 -8.267,8.268 -21.798,8.27 -30.066,0 l -30.067,-30.066 -30.066,30.066 c -8.267,8.268 -21.797,8.268 -30.066,0 -8.268,-8.267 -8.268,-21.796 0,-30.066 L 201.164,618.729 171.1,588.664 c -8.27,-8.268 -8.268,-21.799 0,-30.066 8.267,-8.268 21.797,-8.27 30.066,0 l 30.064,30.064 30.067,-30.064 c 8.268,-8.27 21.797,-8.268 30.064,0 8.27,8.267 8.27,21.797 0,30.066 l -30.064,30.065",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           end().
         end().svg
-      );
+      ).reflect('-28%');
       @element.on(['touchend','click'],this.ontouchend);
       return @element;
-    }
-    onchoose(event) {
-      var choice = event.detail.operation;
-      if(choice === 'multiply') {
-        if(!@selected) {
-          @selected = true;
-          @element.styleProperty('webKitTransform');
-          @element.style({'webkitTransform':@element.styleProperty('webkitTransform')+' translateZ(-50px) translateX(-40px) translateY(10px) scale(1.2) rotateY(40deg)'});
-        }
-      } else {
-        @selected = false;
-        @element.style({'-webkit-transform':'translateX(-50px) rotateY(-90deg)'});
-      }
     }
     ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:{'operation':'multiply','color':'#e97825'}}));
     }
     static init = (function() {
       var styles = [
-        {selector:'.inner .multiply',style:"-webkit-transition:-webkit-transform 0.3s linear;-webkit-transform:translateX(-50px) rotateY(-90deg);left:100px;"}
+        {selector:'.multiply',style:"opacity:0;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
@@ -480,9 +481,7 @@ log.Logger.debug(this,'publishing 4');
       private element, id, selected;
       @id = Math.uuid(8);
       @selected = false;
-      this.onchoose = this.onchoose.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
-      controller.Controller.subscribe('choose',this.onchoose);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'plus'}).add(
         svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"180.0",height:"200.0"}).
           defs().
@@ -551,41 +550,20 @@ log.Logger.debug(this,'publishing 4');
             path({d:"m 682.646,639.988 -42.519,0 0,42.521 c 0,11.693 -9.567,21.258 -21.26,21.26 -11.693,0 -21.26,-9.567 -21.26,-21.26 l 0,-42.521 -42.519,0 c -11.694,0 -21.26,-9.567 -21.26,-21.261 0,-11.691 9.566,-21.258 21.26,-21.258 l 42.519,0 0,-42.519 c 0,-11.693 9.567,-21.26 21.26,-21.26 11.693,0 21.26,9.567 21.26,21.26 l 0,42.519 42.519,0 c 11.694,0 21.26,9.567 21.26,21.258 0,11.694 -9.566,21.261 -21.26,21.261",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none",id:"path9832"}).end().
           end().
         end().svg
-      );
+      ).reflect('-28%');
       @element.on(['touchend','click'],this.ontouchend);
       return @element;
-    }
-    onchoose(event) {
-      var choice = event.detail.operation;
-      if(choice === 'plus') {
-        if(!@selected) {
-          @selected = true;
-          @element.styleProperty('webKitTransform');
-          @element.style({'webkitTransform':@element.styleProperty('webkitTransform')+' translateY(10px) scale(1.2) rotateY(40deg)'});
-        }
-      } else {
-        @selected = false;
-        @element.style({'-webkit-transform':'rotateY(90deg) translateX(206px) translateZ(300px)'});
-      }
     }
     ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:{'operation':'plus','color':'#78bf2b'}}));
     }
-    static init = (function() {
-      var styles = [
-        {selector:'.inner .plus',style:"-webkit-transition:-webkit-transform 0.3s linear;-webkit-transform: rotateY(90deg) translateX(206px) translateZ(300px);left:-400px;"}
-      ];
-      monads.Styleable(styles).on("load").onstyle();
-    })()
   }
   class Divide {
     constructor() {
       private element, id, selected;
       @id = Math.uuid(8);
       @selected = false;
-      this.onchoose = this.onchoose.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
-      controller.Controller.subscribe('choose',this.onchoose);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'divide'}).add(
         svg.Svg({xmlns:"http://www.w3.org/2000/svg",version:"1.1",width:"200.0",height:"200.0"}).
           defs().
@@ -649,29 +627,16 @@ log.Logger.debug(this,'publishing 4');
             path({d:"m 295.012,252.354 -127.559,0 c -11.693,0 -21.26,-9.569 -21.26,-21.262 0,-11.692 9.567,-21.258 21.26,-21.258 l 127.559,0 c 11.693,0 21.26,9.566 21.26,21.258 0,11.693 -9.567,21.262 -21.26,21.262 z m -63.78,21.259 c 11.741,0 21.26,9.518 21.26,21.26 0,11.742 -9.519,21.26 -21.26,21.26 -11.742,0 -21.259,-9.518 -21.259,-21.26 0,-11.742 9.517,-21.26 21.259,-21.26 z m 0,-85.039 c -11.742,0 -21.259,-9.517 -21.259,-21.259 0,-11.743 9.517,-21.26 21.259,-21.26 11.741,0 21.26,9.517 21.26,21.26 0,11.742 -9.519,21.259 -21.26,21.259",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           end().
         end().svg
-      );
+      ).reflect('-28%');
       @element.on(['touchend','click'],this.ontouchend);
       return @element;
-    }
-    onchoose(event) {
-      var choice = event.detail.operation;
-      if(choice === 'divide') {
-        if(!@selected) {
-          @selected = true;
-          @element.styleProperty('webKitTransform');
-          @element.style({'webkitTransform':@element.styleProperty('webkitTransform')+' translateZ(40px) translateX(-30px) translateY(10px) scale(1.2) rotateY(-40deg)'});
-        }
-      } else {
-        @selected = false;
-        @element.style({'-webkit-transform':'rotateY(165deg) translateX(40px) translateZ(80px)'});
-      }
     }
     ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:{'operation':'divide','color':'#27a7e5'}}));
     }
     static init = (function() {
       var styles = [
-        {selector:'.inner .divide',style:"-webkit-transition:-webkit-transform 0.3s linear;-webkit-transform:rotateY(165deg) translateX(40px) translateZ(80px);"}
+        {selector:'.divide',style:"opacity:0;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
@@ -680,10 +645,8 @@ log.Logger.debug(this,'publishing 4');
     constructor() {
       private element, id, selected;
       @id = Math.uuid(8);
-      this.onchoose = this.onchoose.bind(this);
       this.ontouchend = this.ontouchend.bind(this);
-      controller.Controller.subscribe('choose',this.onchoose);
-      @element = monads.DOMable({tagName:'div'}).on('load').add(
+      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'minus'}).add(
         svg.Svg({width:"350.0",height:"270.0"}).
           defs().
             clipPath({clipPathUnits:"userSpaceOnUse",id:@id+"clipPath9698"}).
@@ -747,34 +710,19 @@ log.Logger.debug(this,'publishing 4');
             path({d:"m 703.906,231.093 c 0,-11.692 -9.566,-21.259 -21.26,-21.259 l -127.558,0 c -11.694,0 -21.26,9.567 -21.26,21.259 0,11.693 9.566,21.261 21.26,21.261 l 127.558,0 c 11.694,0 21.26,-9.568 21.26,-21.261",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           end().
         end().svg
-      );
+      ).reflect('-63%');
       @element.on(['touchend','click'],this.ontouchend);
       return @element;
-    }
-    onchoose(event) {
-      var choice = event.detail.operation;
-      if(choice === 'minus') {
-        if(!@selected) {
-          @selected = true;
-          @element.styleProperty('webKitTransform');
-          @element.style({'webkitTransform':@element.styleProperty('webkitTransform')+' translateZ(-10px) translateX(40px) translateY(10px) scale(1.2) rotateY(-50deg)'});
-        }
-      } else {
-        @selected = false;
-        @element.style({'-webkit-transform':'translateX(120px) translateY(-10px) translateZ(100px)'});
-      }
     }
     ontouchend(event) {
       controller.Controller.publish(events.CustomEvent({type:'choose',canBubble:false,isCanceleable:true,detail:{'operation':'minus','color':'#90969d'}}));
     }
-/*
     static init = (function() {
       var styles = [
-        {selector:'.inner .minus',style:"-webkit-transition:-webkit-transform 0.3s linear;-webkit-transform:translateX(120px) translateY(-10px) translateZ(100px);"}
+        {selector:'.minus',style:"opacity:0;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
-*/
   }
   class Shuriken {
     constructor() {
@@ -921,7 +869,7 @@ log.Logger.debug(this,'publishing 4');
       @levels = Levels();
       @difficultyChoice = 'easy';
       @title = Title();
-      @checker = Checker();
+//      @checker = Checker();
       @difficulty = Difficulty();
       @play = Play();
       @problems = [];
@@ -938,7 +886,7 @@ log.Logger.debug(this,'publishing 4');
 */
         )
       );
-      @ninja.insert(document.body);
+      @ninja.element.insert(document.body);
       @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(
         @frame
       ).insert(document.body);
@@ -952,19 +900,22 @@ log.Logger.debug(this,'publishing 4');
       var plus = Plus(), minus, multiply, divide;
       switch(event.detail) {
         case "1":
-          @screens.right.add(plus);
+          minus = Minus();
+          @screens.right.add(plus).add(minus);
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},500);
+          @ninja.raiseSword();
           break;
         case "2":
           minus = Minus();
           @screens.right.add(plus).add(minus);
-          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s','-webkit-transform':'translateX(75%)'})},500);
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},500);
           break;
         case "3":
           minus = Minus();
           multiply = Multiply();
           @screens.right.add(plus).add(minus).add(multiply);
-          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s','-webkit-transform':'translateX(75%)'})},500);
-          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s','-webkit-transform':'translateX(150%)'})},1000);
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},500);
+          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(150%)','opacity':'1'})},1000);
           break;
         case "4":
         default:
@@ -972,9 +923,9 @@ log.Logger.debug(this,'publishing 4');
           multiply = Multiply();
           divide = Divide();
           @screens.right.add(plus).add(minus).add(multiply).add(divide);
-          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s','-webkit-transform':'translateX(73%)'})},500);
-          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s','-webkit-transform':'translateX(150%)'})},1000);
-          setTimeout(function(){divide.style({'-webkit-transition':'-webkit-transform 1s','-webkit-transform':'translateX(225%)'})},1500);
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},500);
+          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(150%)','opacity':'1'})},1000);
+          setTimeout(function(){divide.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(225%)','opacity':'1'})},1500);
           break;
       }
       @screens.showRight();
@@ -983,15 +934,10 @@ log.Logger.debug(this,'publishing 4');
       @color = event.detail.color, @operation = event.detail.operation;
       @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
       @play.style({'-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) scale(3.0)'});
-      @minus.style({'-webkit-transform':'rotateY(49deg) translateX(120px) translateY(-10px) translateZ(100px)'});
-      @multiply.style({'-webkit-transform':' translateX(-50px) rotateY(-137deg)'});
-      @divide.style({'-webkit-transform':'rotateY(213deg) translateX(40px) translateZ(80px)'});
-      @plus.style({'-webkit-transform':'rotateY(90deg) translateX(206px) translateZ(300px) rotateY(-70.5deg)'});
-      @difficulty.style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg) rotateX(110deg)'});
-      ProgressBar({time:@difficultyChoice==='easy'?8:5}).start();
       @sparkles = Sparkles();
       @equation = Equation({operation:@operation,difficultyChoice:@difficultyChoice,color:@color});
-      @equation.instance.element.insert(document.body);
+      @screens.back.add(@equation.instance.element);
+      @screens.showBack();
       @problems.push(@equation);
     }
     ontimeout(event) {
