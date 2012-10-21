@@ -1,4 +1,4 @@
 var monads = require('monads');
-var cube = require('cube');
-cube.WoodPlank().insert(document.body);
+var cubesvgs = require('cubesvgs');
+cubesvgs.WoodPlank3().element.insert(document.body);
 

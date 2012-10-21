@@ -1,3 +1,3 @@
 module monads from 'monads';
-module cube from 'cube';
-cube.WoodPlank().insert(document.body);
+module cubesvgs from 'cubesvgs';
+cubesvgs.WoodPlank3().element.insert(document.body);
