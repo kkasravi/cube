@@ -193,9 +193,9 @@ log.Logger.debug(this,'onend');
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'vertical-number-strip'}).add(
         @carousel
       );
-      var theta = 100 / @numbers.length;
+      var theta = 50 / @numbers.length;
       @numbers.forEach(function(number,i) {
-        var deg = -48+theta*i;
+        var deg = -55+theta*i;
         var panel = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'rotateX('+deg+'deg) translateZ(192px)'}).attributes({'class':'vertical-number-strip-carousel-number'}).text(number).on(['click','touchend'],@onselect.curry(number));
         @carousel.add(panel);
       }, this);
@@ -206,9 +206,9 @@ log.Logger.debug(this,'onend');
     }
     static init = (function() {
       var styles = [
-        {selector:'.vertical-number-strip',style:"width:210px;height:140px;position:relative;margin:0 auto 40px;-webkit-perspective:1000px;float:right;"},
-        {selector:'.vertical-number-strip-carousel',style:"width:100%;height:100%;position:absolute;-webkit-transform-style:preserve-3d;-webkit-transform:translateZ(-192px) rotateX(0deg) translateY(-400px);"},
-        {selector:'.vertical-number-strip-carousel-number',style:"-webkit-backface-visibility:hidden;display:block;width:186px;height:90px;line-height:70px;text-align:center;font-size:50px;font-family:Albertino;"}
+        {selector:'.vertical-number-strip',style:"width:100px;height:140px;position:relative;margin:0 auto 40px;-webkit-perspective:1000px;float:right;"},
+        {selector:'.vertical-number-strip-carousel',style:"width:100%;height:100%;position:absolute;-webkit-transform-style:preserve-3d;-webkit-transform:translateZ(-192px) rotateX(0deg) translateY(-430px);"},
+        {selector:'.vertical-number-strip-carousel-number',style:"-webkit-backface-visibility:hidden;display:block;width:100px;height:70px;line-height:80px;text-align:center;font-size:50px;font-family:Albertino;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
@@ -226,12 +226,12 @@ log.Logger.debug(this,'onend');
     constructor() {
       private wrong, right, wrongAnswers, rightAnswers;
       @wrongAnswers = 0;
-      @wrong = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'50px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(1%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2718').insert(document.body);
+      @wrong = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'200px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2718').insert(document.body);
       @rightAnswers = 0;
-      @right = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','right':'150px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(1%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2714').insert(document.body);
+      @right = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'300px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2714').insert(document.body);
     }
     answer(guess) {
-      guess ? @right.style({'color':'green'}).updateText((@rightAnswers++)+' \\u2714'): @wrong.style({'color':'red'}).updateText((@wrongAnswers++)+' \\u2718');
+      guess ? @right.style({'color':'green'}).updateText((++@rightAnswers)+' \\u2714'): @wrong.style({'color':'red'}).updateText((++@wrongAnswers)+' \\u2718');
     }
   }
   class Play {
@@ -441,9 +441,11 @@ log.Logger.debug(this,'onend');
         {side:'top',board:cubesvgs.WoodPlank2()},
         {side:'bottom',board:cubesvgs.WoodPlank3()}
       ];
+      @screens.back.add(@sequence[0].board.element);
+      @screens.top.add(@sequence[1].board.element).style({'display':'none'});
+      @screens.bottom.add(@sequence[2].board.element).style({'display':'none'});
       @difficultyChoice = 'easy';
       @title = Title();
-//      @checker = Checker();
       @difficulty = Difficulty();
       @play = Play();
       @problems = [];
@@ -508,16 +510,18 @@ log.Logger.debug(this,'onend');
       @screens.showRight();
     }
     onplay(event) {
+      @checker = Checker();
       @color = event.detail.color, @operation = event.detail.operation;
       @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
       @play.style({'-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) scale(3.0)'});
       @sparkles = Sparkles();
       @equation = Equation({operation:@operation,difficultyChoice:@difficultyChoice,color:@color});
-      @screens[@sequence[@activeSide].side].add(@equation.instance.element).add(@sequence[@activeSide].board.element);
-      @screens['show'+@sequence[@activeSide].side.substring(0,1).toUpperCase()+@sequence[@activeSide].side.substring(1)]();
+      @screens[@sequence[@activeSide%3].side].add(@equation.instance.element);
+      @screens['show'+@sequence[@activeSide%3].side.substring(0,1).toUpperCase()+@sequence[@activeSide%3].side.substring(1)]();
       @problems.push(@equation);
       VerticalNumberStrip().insert(document.body);
       Next({color:@color});
+      @screens.front.style({'display':'none'});
     }
     onguess(event) {
       var number = event.detail;
@@ -540,14 +544,14 @@ log.Logger.debug(this,'onend');
       var correct = answer === guess;
       var x = document.documentElement.clientWidth/2;
       var y = document.documentElement.clientHeight/3;
-      correct && @sequence[@activeSide].board.breakBoard() && @sparkles.addSparkles(Math.random()*200+100|0, x, y, 2);
-//      @checker.answer(correct);
+      correct && @sequence[@activeSide%3].board.breakBoard() && @sparkles.addSparkles(Math.random()*200+100|0, x, y, 2);
+      @checker.answer(correct);
       @equation.instance.element.remove();
       @bestGuess = '?';
       @equation = Equation({operation:@operation,difficultyChoice:@difficultyChoice,color:@color});
-      @screens[@sequence[@activeSide].side].add(@equation.instance.element).add(@sequence[@activeSide].board.element);
-      @screens['show'+@sequence[@activeSide].side.substring(0,1).toUpperCase()+@sequence[@activeSide].side.substring(1)]();
       @activeSide++;
+      @screens[@sequence[@activeSide%3].side].style({'display':'block'}).add(@equation.instance.element);
+      @screens['show'+@sequence[@activeSide%3].side.substring(0,1).toUpperCase()+@sequence[@activeSide%3].side.substring(1)]();
       @problems.push(@equation);
     }
     ontouchstart(event) {

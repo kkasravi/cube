@@ -1,10 +1,18 @@
 #!/bin/ksh
 cwd=$(pwd)
-for i in src/*.es;
-do
-cd ~/transpiler
-a=${i##*/}
-b=${a%.es}.js
-echo ${cwd}/$i
-bin/transpiler ${cwd}/$i > ${cwd}/lib/$b
-done
+if [ $# != 0 ]; then
+  cd ~/transpiler
+  a=${1##*/}
+  b=${a%.es}.js
+  echo ${cwd}/$1
+  bin/transpiler ${cwd}/$1 > ${cwd}/lib/$b
+else 
+  for i in src/*.es;
+  do
+    cd ~/transpiler
+    a=${i##*/}
+    b=${a%.es}.js
+    echo ${cwd}/$i
+    bin/transpiler ${cwd}/$i > ${cwd}/lib/$b
+  done
+fi
