@@ -546,12 +546,14 @@ log.Logger.debug(this,'onend');
       var y = document.documentElement.clientHeight/3;
       correct && @sequence[@activeSide%3].board.breakBoard() && @sparkles.addSparkles(Math.random()*200+100|0, x, y, 2);
       @checker.answer(correct);
-      @equation.instance.element.remove();
       @bestGuess = '?';
-      @equation = Equation({operation:@operation,difficultyChoice:@difficultyChoice,color:@color});
       @activeSide++;
+      var oldequation = @equation;
+      @equation = Equation({operation:@operation,difficultyChoice:@difficultyChoice,color:@color});
+      @sequence[@activeSide%3].board.repairBoard();
       @screens[@sequence[@activeSide%3].side].style({'display':'block'}).add(@equation.instance.element);
       @screens['show'+@sequence[@activeSide%3].side.substring(0,1).toUpperCase()+@sequence[@activeSide%3].side.substring(1)]();
+      setTimeout(function(){oldequation.instance.element.remove();},500);
       @problems.push(@equation);
     }
     ontouchstart(event) {
