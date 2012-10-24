@@ -379,8 +379,16 @@ module cubesvgs {
       @breakElement.style.display = 'block';
       return this;
     }
+    hideBoard() {
+      @element.style({'display':'none'});
+      return this;
+    }
     repairBoard() {
       @breakElement.style.display = 'none';
+      return this;
+    }
+    showBoard() {
+      @element.style({'display':'block'});
       return this;
     }
   };
@@ -708,8 +716,16 @@ module cubesvgs {
       @breakElement.style.display = 'block';
       return this;
     }
+    hideBoard() {
+      @element.style({'display':'none'});
+      return this;
+    }
     repairBoard() {
       @breakElement.style.display = 'none';
+      return this;
+    }
+    showBoard() {
+      @element.style({'display':'block'});
       return this;
     }
   };
@@ -1081,14 +1097,22 @@ module cubesvgs {
       @breakElement.style.display = 'block';
       return this;
     }
+    hideBoard() {
+      @element.style({'display':'none'});
+      return this;
+    }
     repairBoard() {
       @breakElement.style.display = 'none';
+      return this;
+    }
+    showBoard() {
+      @element.style({'display':'block'});
       return this;
     }
   };
   export class Ninja {
     constructor() {
-      private element, id, leftArm, ninja, raiseSwordDuration, rightArm;
+      private belt, element, id, leftArm, ninja, raiseSwordDuration, rightArm;
       @id = 'ninja';
       @raiseSwordDuration = '500ms';
       @ninja = svg.Svg({id:@id,width:"428pt",height:"596pt"}).
@@ -1124,6 +1148,8 @@ module cubesvgs {
             path({d:"m 206.60547,397.40234 c -0.41016,0.52735 -1.16406,0.625 -1.69141,0.21875 l -20.41015,-15.70703 c -0.52735,-0.40625 -0.625,-1.16015 -0.22266,-1.6875 l 2.79687,-3.63281 c 0.40625,-0.52734 1.16407,-0.62891 1.69141,-0.22266 l 20.41016,15.70703 c 0.52734,0.40625 0.625,1.16407 0.21875,1.69141 l -2.79297,3.63281",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
             path({d:"m 242.65625,358.73047 c 0,12.92969 -10.48047,23.41015 -23.41406,23.41015 -12.92969,0 -23.41016,-10.48046 -23.41016,-23.41015 0,-12.92969 10.48047,-23.41406 23.41016,-23.41406 12.93359,0 23.41406,10.48437 23.41406,23.41406",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
             path({d:"m 274.41406,315.41016 c 0,12.92968 -10.48047,23.41406 -23.41015,23.41406 -12.9336,0 -23.41407,-10.48438 -23.41407,-23.41406 0,-12.92969 10.48047,-23.41016 23.41407,-23.41016 12.92968,0 23.41015,10.48047 23.41015,23.41016",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
+          end().
+          path({id:'belt',d:"m 199.84666,167.85242 c 14.08938,-0.70096 56.28943,-3.56939 64.08911,-9.96321 0.14475,-4.44342 0.74931,-9.39424 0.0937,-13.17774 -2.12022,13.91683 -55.05476,16.49783 -64.18277,23.14095 z M 94.267078,156.73949 c 6.496902,10.06001 51.844632,10.57913 68.553782,11.40916 -14.71949,-7.75178 -63.166668,-6.78977 -68.051398,-23.42251 0,3.46381 -0.502384,8.54954 -0.502384,12.01335 z M 217.6741,167.13092 c -6.30105,0.98841 -12.7866,0.84469 -17.46981,2.49301 -0.51658,3.02681 3.69832,4.22345 6.35781,6.05361 1.96128,1.34914 2.37851,2.73056 7.60952,3.00334 13.40536,0.6951 54.1238,-6.73112 50.34032,-19.68302 -4.76836,5.9011 -37.68995,6.69886 -46.83784,8.13306 z m -122.487405,4.15599 c 1.850577,4.68978 41.714685,8.38236 48.867235,7.48194 6.08534,-0.76549 12.39492,-8.42928 17.06678,-9.55847 -15.47732,-0.31382 -59.65851,-0.9708 -66.853632,-9.97789 1.141,4.47568 -0.508059,8.44396 0.919617,12.05442 z m 70.205675,-4.83643 c 10.7345,1.65711 12.05148,9.47635 21.47468,12.31837 2.6226,-5.40248 1.24034,-13.59127 -2.756,-16.62688 -10.10724,-6.91001 -21.80393,0.39596 -18.71868,4.30851 z m 27.89778,18.75034 c 4.53846,-2.69538 7.56411,-20.909 3.21298,-23.39906 -1.00478,-1.17612 -10.58124,-0.5602 -13.24074,-1.62486 9.76947,5.46115 6.87723,19.85606 0.96219,24.50478 3.11647,-0.7831 5.90369,1.26411 9.06557,0.51914 z m -26.65176,-1.85949 c 4.48454,0.65697 8.16015,2.0472 12.41478,2.90948 5.49497,-1.61606 5.88383,-3.27024 7.81388,-5.81897 -3.50248,-1.12625 -5.42402,-4.17065 -8.87541,-5.34383 -5.29629,1.04706 -8.31909,5.17665 -11.35325,8.25332 z m 10.77424,-8.84577 c -4.62929,-7.52888 -7.81388,-5.00655 -11.58032,-7.03321 -31.42297,14.56208 -56.86845,66.924 -68.820585,84.56861 1.651901,3.49315 19.269315,7.33529 22.482285,9.42063 9.96248,-22.03231 30.08612,-74.10972 57.91862,-86.95603 z m 19.11036,8.84577 c 11.07793,10.39729 30.43807,59.94357 41.323,80.89363 1.96411,-1.3345 19.54747,-7.06548 21.12274,-10.63195 -6.89711,-16.00216 -36.25095,-73.03039 -59.18736,-80.84083 -0.8373,3.81576 -1.35671,7.72539 -3.25838,10.57915",style:"fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;-webkit-transform:scale(0.94) translate(52px,260px);"}).end().
             animateMotion({'id':'swordmove1','xlink:href':'#sword','path':"m 0,0 l 2,2 4,-4 32,-32 64,-64",'begin':'indefinite','dur':@raiseSwordDuration,'repeatCount':"1",'rotate':"0",'fill':"freeze"}).end().
             animateTransform({'id':'swordmove2','xlink:href':'#sword','attributeName':'transform','attributeType':'XML','type':'rotate','from':'0','to':'20','begin':'indefinite','dur':@raiseSwordDuration,'additive':'replace','fill':"freeze"}).end().
             animateMotion({'id':'armmove1','xlink:href':'#rightArm','path':"m 0,0 l 0,-2 0,-4 0,-12",'begin':'indefinite','dur':@raiseSwordDuration,'repeatCount':"1",'rotate':"0",'fill':"freeze"}).end().
@@ -1133,6 +1159,11 @@ module cubesvgs {
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'ninja'}).reflect('-77%').add(@ninja.svg);
       @leftArm = @ninja.svg.getElementById('leftArm');
       @rightArm = @ninja.svg.getElementById('rightArm');
+      @belt = @ninja.svg.getElementById('belt');
+    }
+    changeBelt(color) {
+      @belt.style.fill = color;
+      return this;
     }
     raiseSword() {
       @ninja.svg.getElementById('swordmove1').beginElement();
@@ -1143,6 +1174,7 @@ module cubesvgs {
       @leftArm.style.webkitTransformOriginX = '219';
       @leftArm.style.webkitTransformOriginY = '315';
       @leftArm.style.webkitTransform = 'rotate(10deg) translate(-10px,-10px)';
+      return this;
     }
     rotateSword() {
       var sword = @ninja.svg.getElementById('sword');
@@ -1157,6 +1189,7 @@ module cubesvgs {
       @rightArm.style.webkitTransformOriginX = '50%';
       @rightArm.style.webkitTransformOriginY = '50%';
       @rightArm.style.webkitTransform = 'rotate(-35deg)';
+      return this;
     }
     static init = (function() {
       var styles = [

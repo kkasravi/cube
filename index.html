@@ -7,7 +7,16 @@
   </style>
 </head>
 <body>
-<svg id="ninja"></svg>
+<svg id="ninja">
+  <filter id="emboss" >     
+    <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur"/>    
+    <feSpecularLighting in="blur" surfaceScale="-3" style="lighting-color:white"          
+      specularConstant="1" specularExponent="16" result="spec" kernelUnitLength="1" >      
+      <feDistantLight azimuth="45" elevation="45" />    
+    </feSpecularLighting>    
+    <feComposite in="spec" in2="SourceGraphic" operator="in" result="specOut"/>  
+</filter>
+</svg>
 <script type='text/javascript' src='../require/lib/require.js'></script>
 <script type='text/javascript'>
   require('loader').Loader({ws:'ws://'+location.hostname+':81/',http:location.origin,modules:['../monads/lib/utilities','../monads/lib/monads','../svg/lib/svg','../numbers/lib/numbers','../canvas/lib/canvas','../cube/lib/cubesvgs','../cube/lib/cube','../cube/lib/main']});

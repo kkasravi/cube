@@ -547,13 +547,17 @@ log.Logger.debug(this,'onend');
       correct && @sequence[@activeSide%3].board.breakBoard() && @sparkles.addSparkles(Math.random()*200+100|0, x, y, 2);
       @checker.answer(correct);
       @bestGuess = '?';
+      var oldboard = @sequence[@activeSide%3].board;
       @activeSide++;
       var oldequation = @equation;
       @equation = Equation({operation:@operation,difficultyChoice:@difficultyChoice,color:@color});
-      @sequence[@activeSide%3].board.repairBoard();
+      @sequence[@activeSide%3].board.repairBoard().showBoard();
       @screens[@sequence[@activeSide%3].side].style({'display':'block'}).add(@equation.instance.element);
       @screens['show'+@sequence[@activeSide%3].side.substring(0,1).toUpperCase()+@sequence[@activeSide%3].side.substring(1)]();
-      setTimeout(function(){oldequation.instance.element.remove();},500);
+      setTimeout(function(){
+        oldequation.instance.element.remove();
+        oldboard.hideBoard();
+      },500);
       @problems.push(@equation);
     }
     ontouchstart(event) {
@@ -565,6 +569,15 @@ log.Logger.debug(this,'onend');
     ontouchend(event) {
       event.preventDefault();
     }
+    static blackbelt = '#211e1e'
+    static bluebelt = '#00abee'
+    static brownbelt = '#825130'
+    static greenbelt = '#3fb83a'
+    static orangebelt = '#f58511'
+    static purplebelt = '#3fb83a'
+    static redbelt = '#f04521'
+    static yellowbelt = '#fff000'
+    static whitebelt = '#ffffff'
     static shadow = [
       '0 1px 0 #ccc', 
       '0 2px 0 #c9c9c9',
