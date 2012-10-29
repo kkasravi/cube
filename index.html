@@ -7,7 +7,8 @@
   </style>
 </head>
 <body>
-<svg id="ninja">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="ninja">
+<defs>
   <filter id="emboss" >     
     <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur"/>    
     <feSpecularLighting in="blur" surfaceScale="-3" style="lighting-color:white"          
@@ -15,11 +16,19 @@
       <feDistantLight azimuth="45" elevation="45" />    
     </feSpecularLighting>    
     <feComposite in="spec" in2="SourceGraphic" operator="in" result="specOut"/>  
-</filter>
+  </filter>
+  <filter id='drop-shadow'>
+    <feOffset dx='5' dy='5' />
+    <feGaussianBlur stdDeviation='3' result='offset-blur' />
+    <feFlood flood-color='black' flood-opacity='0.75' result='color' />
+    <feComposite operator='in' in='color' in2='offset-blur' result='shadow' />
+    <feComposite operator='over' in='SourceGraphic' in2='shadow' />
+  </filter>
+</defs>
 </svg>
 <script type='text/javascript' src='../require/lib/require.js'></script>
 <script type='text/javascript'>
-  require('loader').Loader({ws:'ws://'+location.hostname+':81/',http:location.origin,modules:['../monads/lib/utilities','../monads/lib/monads','../svg/lib/svg','../numbers/lib/numbers','../canvas/lib/canvas','../cube/lib/cubesvgs','../cube/lib/cube','../cube/lib/main']});
+  require('loader').Loader({ws:'ws://'+location.hostname+':81/',http:location.origin,modules:['../monads/lib/utilities','../monads/lib/monads','../svg/lib/svg','../numbers/lib/numbers','../cube/lib/planks','../cube/lib/cubesvgs','../cube/lib/cube','../cube/lib/main']});
 </script>
 </body>
 </html>

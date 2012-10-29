@@ -1,3 +1,16 @@
+/*
+    how many operations per level per operator
+                 +    -    x    /
+     level 1    10    
+     level 2    10   10
+     level 3    10   10   10
+     level 3    10   10   10   10
+
+     what times qualify for what belts
+     level 1    white  orange  yellow  camoflage  green  purple  blue  brown  red  black
+                <3m    <2m     <90s    <80s       <70s   <60s    <50s  <40s   <30s <20s
+  }
+*/
 module cube {
   module log from 'log';
   module monads from 'monads';
@@ -5,111 +18,18 @@ module cube {
   module events from 'events';
   module svg from 'svg';
   module carousel from 'numbers';
-  module canvas from 'canvas';
   module cubesvgs from 'cubesvgs';
-  class Sparkles {
-    constructor() {
-      private element, stage, imgSeq, bmpSeq;
-      @onimageload = @onimageload.bind(this);
-      @tick = @tick.bind(this);
-      @imgSeq = new Image();
-      @element = monads.DOMable({tagName:'canvas'}).on('load').attributes({'id':'testCanvas',width:'980',height:'680'}).style({'background-color':'transparent','left':'20%','position':'absolute','z-index':'-100'}).insert(document.body).element();
-      @stage = canvas.Stage({autoClear:false,canvas:@element});
-      @imgSeq.onload = @onimageload;
-      @imgSeq.src = "img/sparkle_21x23.png";
-    }
-    onimageload() {
-      @stage.addChild(canvas.Shape({alpha:0.33,graphics:canvas.Graphics().beginFill('transparent').drawRect(0,0,@element.width+1,@element.height)}));
-      @bmpSeq = canvas.BitmapSequence({regX:10.5,regY:11.5,spriteSheet:canvas.SpriteSheet({image:@imgSeq,frameWidth:21,frameHeight:23})});
-      canvas.Ticker.addListener(this);
-    }
-    tick() {
-      var h = @element.height;
-      var l = @stage.getNumChildren();
-      for (var i=l-1; i>0; i--) {
-        var sparkle = @stage.getChildAt(i);
-        sparkle.vY += 2;
-        sparkle.vX *= 0.98;
-        sparkle.x += sparkle.vX;
-        sparkle.y += sparkle.vY;
-        sparkle.scaleX = sparkle.scaleY = sparkle.scaleX+sparkle.vS;
-        sparkle.alpha += sparkle.vA;
-        if (sparkle.y > h) {
-          sparkle.vY *= -0.6;
-          sparkle.y -= sparkle.y%h;
-        }
-        if (sparkle.alpha <= 0) {
-          @stage.removeChildAt(i);
-        }
-      }
-      @stage.update();
-    }
-    addSparkles(count, x, y, speed) {
-      for (var i=0; i<count; i++) {
-        var sparkle = canvas.BitmapSequence(@bmpSeq);
-        sparkle.x = x;
-        sparkle.y = y;
-        sparkle.rotation = Math.random()*360;
-        sparkle.alpha = Math.random()*0.5+0.5;
-        sparkle.scaleX = sparkle.scaleY = Math.random()+0.3;
-        sparkle.compositeOperation = "lighter";
-        var a = Math.PI*2*Math.random();
-        var v = (Math.random()-0.5)*30*speed;
-        sparkle.vX = Math.cos(a)*v;
-        sparkle.vY = Math.sin(a)*v;
-        sparkle.vS = (Math.random()-0.5)*0.2; // scale
-        sparkle.vA = -Math.random()*0.05-0.01; // alpha
-        sparkle.currentFrame = Math.random()*12|0;
-        @stage.addChild(sparkle);
-      }
-    }
-  }
-  class ProgressBar {
-    constructor(properties={time:5}) {
-      private element, div, time;
-      @oncountdown = @oncountdown.bind(this);
-      @oniteration = @oniteration.bind(this);
-      @onend = @onend.bind(this);
-      @time = properties.time;
-      @div = monads.DOMable({tagName:'div'}).on('load');
-      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'progressbar'}).add(
-         div.element()
-      ).insert(document.body);
-    }
-    start() {
-      @div.animation({property:'progress',time:@time+'s',count:'infinite'});
-      @div.element().addEventListener('webkitAnimationStart',this.onstart);
-      @div.element().addEventListener('webkitAnimationIteration',this.oniteration);
-    }
-    oncountdown() {
-log.Logger.debug(this,'oncountdown');
-//	setTimer(1000,@oncountdown);
-    }
-    oniteration() {
-      controller.Controller.publish(events.CustomEvent({type:'timeout',canBubble:false,isCanceleable:true}));
-    }
-    onend() {
-log.Logger.debug(this,'onend');
-    }
-    static init = (function() {
-      var styles = [
-        {selector:'#progressbar',style:"margin-top:15px;margin-left:35%;width:20%;background-color:transparent;border-radius:13px;padding:3px;"},
-        {selector:'#progressbar div',style:"background-image:-webkit-gradient(linear,left bottom,left top,color-stop(0.45, rgb(255,132,25)), color-stop(0.73, rgb(234,235,193)), color-stop(0.87, rgb(255,132,25)));width:90%;height:20px;border-radius:10px;"},
-        {selector:'@-webkit-keyframes progress',style:"from {width:100%;} to {width:0%;}"}
-      ];
-      monads.Styleable(styles).on("load").onstyle();
-    })()
-  }
+  module planks from 'planks';
   class Equation {
     constructor(properties={}) {
-      private sections, guessindex, instance;
+      private sections, guessindex, instance, level;
       this.onnext = this.onnext.bind(this);
       @guessindex = 0;
       @operation = properties.operation;
+      @level = properties.level;
       @sections = @equation;
       @sections.element.style({'font-family':'Albertino','color':properties.color}).textShadow(Main.shadow).translate({x:'-190%',y:'-100%'});
       monads.Styleable([{selector:'.sections > .section > .carousel > .field',style:"color:"+properties.color+";"}]).on("load").onstyle();
-//      @sections.sections[4].element.on(['touchend','click'],this.onnext);
     }
     answer() {
       var operand1 = @instance.sections[0].carousel.children[0].text()
@@ -144,7 +64,14 @@ log.Logger.debug(this,'onend');
       switch(@operation) {
         case 'minus':
           operand1=Math.round(Math.random()*100); 
-          operand2=operand1+Math.round(Math.random()*100);
+          switch(@level) {
+            case 1:
+            case 2:
+              operand2=Math.round(Math.random()*10);
+              break;
+            default:
+              operand2=operand1+Math.round(Math.random()*100);
+          }
           answer = operand2 - operand1;
           @instance = carousel.Sections({sets:[[operand2+'',' ',' ',' '],['\\u002D','\\u002D','\\u002D'],[operand1+'',' ',' ',' '],['\\u003D','\\u003D'],guesses]});
           break;
@@ -161,8 +88,25 @@ log.Logger.debug(this,'onend');
           @instance = carousel.Sections({sets:[[operand1+'','1','1','1'],['\\u00F7','\\u00F7','\\u00F7'],[operand2+'','1','1','1'],['\\u003D','\\u003D'],guesses]});
           break;
         case 'plus':
-          operand1=Math.round(Math.random()*100); 
-          operand2=Math.round(Math.random()*100);
+          switch(@level) {
+            case 1:
+              operand1=Math.ceil(Math.random()*10); 
+              operand2=Math.ceil(Math.random()*10);
+              break;
+            case 2:
+              operand1=Math.ceil(Math.random()*50); 
+              operand2=Math.ceil(Math.random()*10);
+              break;
+            case 3:
+              operand1=Math.ceil(Math.random()*100); 
+              operand2=Math.ceil(Math.random()*20);
+              break;
+            case 4:
+            default:
+              operand1=Math.ceil(Math.random()*100); 
+              operand2=Math.ceil(Math.random()*100);
+              break;
+          }
           answer = operand2 + operand1;
           @instance = carousel.Sections({sets:[[operand1,'1','1','1'],['\\u002B','\\u002B','\\u002B'],[operand2,'1','1','1'],['\\u003D','\\u003D'],guesses]});
           break;
@@ -196,7 +140,7 @@ log.Logger.debug(this,'onend');
       var theta = 50 / @numbers.length;
       @numbers.forEach(function(number,i) {
         var deg = -55+theta*i;
-        var panel = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'rotateX('+deg+'deg) translateZ(192px)'}).attributes({'class':'vertical-number-strip-carousel-number'}).text(number).on(['click','touchend'],@onselect.curry(number));
+        var panel = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'rotateX('+deg+'deg) translateZ(192px)'}).attributes({'class':'vertical-number-strip-carousel-number'}).text(number).on(['touchend'],@onselect.curry(number));
         @carousel.add(panel);
       }, this);
       return @element;
@@ -222,35 +166,29 @@ log.Logger.debug(this,'onend');
       return @title;
     }
   }
+  class TimeTracker {
+  }
   class Checker {
     constructor() {
-      private wrong, right, wrongAnswers, rightAnswers;
+      private wrong, right, wrongAnswers, rightAnswers, total, totalCount, totalTime, currentCount;
       @wrongAnswers = 0;
       @wrong = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'200px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2718').insert(document.body);
       @rightAnswers = 0;
-      @right = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'300px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2714').insert(document.body);
+      @right = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'350px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2714').insert(document.body);
+      @totalCount = 10;
+      @currentCount = 1;
+      @total = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'90%','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text(@currentCount+" of "+@totalCount).insert(document.body);
     }
     answer(guess) {
+      if(!@totalTime) {
+        @totalTime = new Date();
+      }
       guess ? @right.style({'color':'green'}).updateText((++@rightAnswers)+' \\u2714'): @wrong.style({'color':'red'}).updateText((++@wrongAnswers)+' \\u2718');
-    }
-  }
-  class Play {
-    constructor() {
-      private choice, play;
-      this.onchoose = this.onchoose.bind(this);
-      this.ontouchend = this.ontouchend.bind(this);
-      @choice = null;
-      @play = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transition':'-webkit-transform 400ms linear','-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) rotateZ(0deg) scale(3.0)','white-space':'nowrap','height':'60px','width':'60px','color':'#e97825','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
-      @play.on(['touchend','click'],this.ontouchend);
-      controller.Controller.subscribe('choose',this.onchoose);
-      return @play;
-    }
-    onchoose(event) {
-      @choice = event.detail;
-      @play.style({'-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(0deg) rotateZ(0deg) scale(3.0)'});
-    }
-    ontouchend(event) {
-      @choice && controller.Controller.publish(events.CustomEvent({type:'play',canBubble:false,isCanceleable:true,detail:@choice}));
+      @currentCount++;
+      @total.updateText(@currentCount+" of "+@totalCount);
+      if(@currentCount === @totalCount) {
+        alert('totalTime = '+(new Date().getTime() - @totalTime.getTime()));
+      }
     }
   }
   class Levels {
@@ -261,11 +199,10 @@ log.Logger.debug(this,'onend');
       this.onthree = this.onthree.bind(this);
       this.onfour = this.onfour.bind(this);
       @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('levels:');
-      @one = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateY(100px)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('1').on(['click','touchend'],this.onone);
-      @two = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(80px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('2').on(['click','touchend'],this.ontwo);
-      @three = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(160px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('3').on(['click','touchend'],this.onthree);
-      @four = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(240px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('4').on(['click','touchend'],this.onfour);
-//      @levels = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(30px) translateY(130px) rotateY(-230deg)','-webkit-transition':'-webkit-transform 400ms linear'}
+      @one = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateY(100px)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('1').on(['touchend'],this.onone);
+      @two = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(80px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('2').on(['touchend'],this.ontwo);
+      @three = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(160px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('3').on(['touchend'],this.onthree);
+      @four = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(240px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('4').on(['touchend'],this.onfour);
       @levels = monads.DOMable({tagName:'div'}).on('load').add(
         @title
       ).add(
@@ -290,52 +227,6 @@ log.Logger.debug(this,'onend');
     }
     onfour(event) {
       controller.Controller.publish(events.CustomEvent({type:'level',canBubble:false,isCanceleable:true,detail:'4'}));
-    }
-  }
-  class Difficulty {
-    constructor() {
-      private difficulty, easy, easyarrow, hard, hardarrow;
-      this.oneasy = this.oneasy.bind(this);
-      this.onhard = this.onhard.bind(this);
-      @easy = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(0px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('Easy').on(['click','touchend'],this.oneasy);
-      @hard = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(220px) translateY(0px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('Hard').on(['click','touchend'],this.onhard);
-      @easyarrow =  monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(-60px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
-      @hardarrow =  monads.DOMable({tagName:'div'}).on('load').style({'display':'none','-webkit-transform':'translateX(160px) translateY(-10px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('\\u2794');
-      @difficulty = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(30px) translateY(230px) rotateY(-230deg)','-webkit-transition':'-webkit-transform 400ms linear'}).add(
-        @easyarrow
-      ).add(
-        @easy
-      ).add(
-        @hardarrow
-      ).add(
-        @hard
-      );
-      return @difficulty;
-    }
-    oneasy(event) {
-      @easyarrow.style({'display':'block'});
-      @hardarrow.style({'display':'none'});
-      controller.Controller.publish(events.CustomEvent({type:'difficulty',canBubble:false,isCanceleable:true,detail:'easy'}));
-    }
-    onhard(event) {
-      @easyarrow.style({'display':'none'});
-      @hardarrow.style({'display':'block'});
-      controller.Controller.publish(events.CustomEvent({type:'difficulty',canBubble:false,isCanceleable:true,detail:'hard'}));
-    }
-  }
-  class Next {
-    constructor(properties={color:'transparent'}) {
-      private element, next;
-      @onnext = @onnext.bind(this);
-      controller.Controller.subscribe('play',@onplay);
-      @next = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','-webkit-transform':'translateX(110px) translateY(200px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':properties.color,'font-family':'Albertino','font-size':'8em'}).textShadow(Main.shadow).text('\\u2794').on(['click','touchend'],this.onnext);
-      @element = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(60%) translateY(30px)','-webkit-transition':'-webkit-transform 400ms linear'}).add(
-        @next
-      ).insert(document.body);
-      @next.on(['touchend','click'],this.onnext);
-    }
-    onnext(event) {
-      controller.Controller.publish(events.CustomEvent({type:'next',canBubble:false,isCanceleable:true}));
     }
   }
   export class Container {
@@ -418,48 +309,37 @@ log.Logger.debug(this,'onend');
   };
   class Main {
     constructor() {
-      private activeSide, bestGuess, container, checker, color, difficulty, difficultyChoice, equation, frame, levels, ninja, operation, problems, play, screens, sequence, shuriken, sparkles, title;
-      @ontouchstart = this.ontouchstart.bind(this);
-      @ontouchmove = this.ontouchmove.bind(this);
-      @ontouchend = this.ontouchend.bind(this);
-      @onguess = this.onguess.bind(this);
-      @onnext = this.onnext.bind(this);
-      @onplay = this.onplay.bind(this);
-      @onlevel = this.onlevel.bind(this);
-      @ondifficulty = this.ondifficulty.bind(this);
+      private activeSide, bestGuess, container, checker, color, equation, frame, level, levels, ninja, operation, problems, play, screens, sequence, title;
+      @ontouchstart = @ontouchstart.bind(this);
+      @ontouchmove = @ontouchmove.bind(this);
+      @ontouchend = @ontouchend.bind(this);
+      @onguess = @onguess.bind(this);
+      @onnext = @onnext.bind(this);
+      @onplay = @onplay.bind(this);
+      @onlevel = @onlevel.bind(this);
       controller.Controller.subscribe('guess',@onguess);
       controller.Controller.subscribe('next',@onnext);
       controller.Controller.subscribe('play',@onplay);
-      controller.Controller.subscribe('difficulty',@ondifficulty);
       controller.Controller.subscribe('level',@onlevel);
       @activeSide = 0;
       @bestGuess = '?';
       @screens = Container({front:Levels()}).showFront();
+      @level = 1;
       @levels = Levels();
       @sequence = [
-        {side:'back',board:cubesvgs.WoodPlank1()},
-        {side:'top',board:cubesvgs.WoodPlank2()},
-        {side:'bottom',board:cubesvgs.WoodPlank3()}
+        {side:'back',board:planks.WoodPlank1()},
+        {side:'top',board:planks.WoodPlank2()},
+        {side:'bottom',board:planks.WoodPlank3()}
       ];
       @screens.back.add(@sequence[0].board.element);
       @screens.top.add(@sequence[1].board.element).style({'display':'none'});
       @screens.bottom.add(@sequence[2].board.element).style({'display':'none'});
-      @difficultyChoice = 'easy';
       @title = Title();
-      @difficulty = Difficulty();
-      @play = Play();
       @problems = [];
-      @shuriken = cubesvgs.Shuriken();
       @ninja = cubesvgs.Ninja();
       @frame = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'frame'}).add(
         monads.DOMable({tagName:'div'}).on('load').attributes({'class':'inner'}).add(
           @title
-        ).add(
-          @play
-/*
-        ).add(
-          @difficulty
-*/
         )
       );
       @ninja.element.insert(document.body);
@@ -467,27 +347,27 @@ log.Logger.debug(this,'onend');
         @frame
       ).insert(document.body);
       @screens.element.insert(document.body);
-      monads.DOMable({element:document.body}).on('touchstart',this.ontouchstart).on('touchmove',this.ontouchmove).on(['touchend','click'],this.ontouchend);
-    }
-    ondifficulty(event) {
-      @difficultyChoice = event.detail;
+      monads.DOMable({element:document.body}).on('touchstart',@ontouchstart).on('touchmove',@ontouchmove).on(['touchend'],@ontouchend);
     }
     onlevel(event) {
       var plus = cubesvgs.Plus(), minus, multiply, divide;
       switch(event.detail) {
         case "1":
+          @level = 1;
           minus = cubesvgs.Minus();
           @screens.right.add(plus).add(minus);
           setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},500);
           @ninja.rotateSword();
           break;
         case "2":
+          @level = 2;
           minus = cubesvgs.Minus();
           @screens.right.add(plus).add(minus);
           setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},500);
           @ninja.raiseSword();
           break;
         case "3":
+          @level = 3;
           minus = cubesvgs.Minus();
           multiply = cubesvgs.Multiply();
           @screens.right.add(plus).add(minus).add(multiply);
@@ -497,6 +377,7 @@ log.Logger.debug(this,'onend');
           break;
         case "4":
         default:
+          @level = 4;
           minus = cubesvgs.Minus();
           multiply = cubesvgs.Multiply();
           divide = cubesvgs.Divide();
@@ -513,14 +394,12 @@ log.Logger.debug(this,'onend');
       @checker = Checker();
       @color = event.detail.color, @operation = event.detail.operation;
       @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
-      @play.style({'-webkit-transform':'translateX(-1000px) translateY(-350px) rotateY(130deg) rotateX(-106deg) scale(3.0)'});
-      @sparkles = Sparkles();
-      @equation = Equation({operation:@operation,difficultyChoice:@difficultyChoice,color:@color});
+      @equation = Equation({operation:@operation,level:@level,color:@color});
       @screens[@sequence[@activeSide%3].side].add(@equation.instance.element);
       @screens['show'+@sequence[@activeSide%3].side.substring(0,1).toUpperCase()+@sequence[@activeSide%3].side.substring(1)]();
       @problems.push(@equation);
       VerticalNumberStrip().insert(document.body);
-      Next({color:@color});
+      @ninja.play();
       @screens.front.style({'display':'none'});
     }
     onguess(event) {
@@ -544,13 +423,13 @@ log.Logger.debug(this,'onend');
       var correct = answer === guess;
       var x = document.documentElement.clientWidth/2;
       var y = document.documentElement.clientHeight/3;
-      correct && @sequence[@activeSide%3].board.breakBoard() && @sparkles.addSparkles(Math.random()*200+100|0, x, y, 2);
+      correct && @sequence[@activeSide%3].board.breakBoard();
       @checker.answer(correct);
       @bestGuess = '?';
       var oldboard = @sequence[@activeSide%3].board;
       @activeSide++;
       var oldequation = @equation;
-      @equation = Equation({operation:@operation,difficultyChoice:@difficultyChoice,color:@color});
+      @equation = Equation({operation:@operation,level:@level,color:@color});
       @sequence[@activeSide%3].board.repairBoard().showBoard();
       @screens[@sequence[@activeSide%3].side].style({'display':'block'}).add(@equation.instance.element);
       @screens['show'+@sequence[@activeSide%3].side.substring(0,1).toUpperCase()+@sequence[@activeSide%3].side.substring(1)]();

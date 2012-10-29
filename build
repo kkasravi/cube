@@ -1,0 +1,13 @@
+#!/bin/ksh
+rm -f tt
+head -28 index.html > tt
+echo '<script type="text/javascript">' >> tt
+head -2419 ~/require/lib/require.js >> tt
+for i in ~/monads/lib/utilities.js ~/monads/lib/monads.js ~/svg/lib/svg.js ~/numbers/lib/numbers.js ~/cube/lib/cubesvgs.js ~/cube/lib/planks.js ~/cube/lib/cube.js ~/cube/lib/main.js; do
+cat $i >> tt
+done
+echo '})();' >> tt
+echo '</script>' >> tt
+echo '</body>' >> tt
+echo '</html>' >> tt
+mv tt ~/Documents/Titanium_Studio_Workspace/NinjaMath/Resources/HTML/index.html
