@@ -17,116 +17,157 @@ module cube {
   module controller from 'controller';
   module events from 'events';
   module svg from 'svg';
-  module carousel from 'numbers';
   module cubesvgs from 'cubesvgs';
   module planks from 'planks';
+  module belts from 'belts';
+  class Rules {
+    constructor(properties={}) {
+      private levels;
+      @levels = {"1":{
+                       45:"black",
+                       50:"red",
+                       55:"brown",
+                       60:"blue",
+                       65:"purple",
+                       70:"green",
+                       75:"camoflage",
+                       80:"yellow",
+                       85:"orange",
+                       90:"white"
+                     },
+                 "2":{
+                       45:"black",
+                       50:"red",
+                       55:"brown",
+                       60:"blue",
+                       65:"purple",
+                       70:"green",
+                       75:"camoflage",
+                       80:"yellow",
+                       85:"orange",
+                       90:"white"
+                     },
+                 "3":{
+                       45:"black",
+                       50:"red",
+                       55:"brown",
+                       60:"blue",
+                       65:"purple",
+                       70:"green",
+                       75:"camoflage",
+                       80:"yellow",
+                       85:"orange",
+                       90:"white"
+                     },
+                 "4":{
+                       45:"black",
+                       50:"red",
+                       55:"brown",
+                       60:"blue",
+                       65:"purple",
+                       70:"green",
+                       75:"camoflage",
+                       80:"yellow",
+                       85:"orange",
+                       90:"white"
+                     }
+                };
+    }
+    beltLevel(level, time) {
+      if(time <= 45) {
+        return @levels[level][45];
+      } else if(time <= 50) {
+        return @levels[level][50];
+      } else if(time <= 55) {
+        return @levels[level][55];
+      } else if(time <= 60) {
+        return @levels[level][60];
+      } else if(time <= 65) {
+        return @levels[level][65];
+      } else if(time <= 70) {
+        return @levels[level][70];
+      } else if(time <= 75) {
+        return @levels[level][75];
+      } else if(time <= 80) {
+        return @levels[level][80];
+      } else if(time <= 85) {
+        return @levels[level][85];
+      } else {
+        return @levels[level][90];
+      }
+    }
+  }
   class Equation {
     constructor(properties={}) {
-      private sections, guessindex, instance, level;
-      this.onnext = this.onnext.bind(this);
-      @guessindex = 0;
+      private answer, level, operand1, operand2, operation, operationSign;
       @operation = properties.operation;
-      @level = properties.level;
-      @sections = @equation;
-      @sections.element.style({'font-family':'Albertino','color':properties.color}).textShadow(Main.shadow).translate({x:'-190%',y:'-100%'});
-      monads.Styleable([{selector:'.sections > .section > .carousel > .field',style:"color:"+properties.color+";"}]).on("load").onstyle();
-    }
-    answer() {
-      var operand1 = @instance.sections[0].carousel.children[0].text()
-      var operator = @instance.sections[1].carousel.children[0].text()
-      var operand2 = @instance.sections[2].carousel.children[0].text()
-      var value;
-      switch(operator) {
-        case '\\u002B':
-          value = parseInt(operand1) + parseInt(operand2);
-          break;
-        case '\\u002D':
-          value = parseInt(operand1) - parseInt(operand2);
-          break;
-        case '\\u00D7':
-          value = parseInt(operand1) * parseInt(operand2);
-          break;
-        case '\\u003D':
-          value = parseInt(operand1) / parseInt(operand2);
-          break;
-      }
-      return value;
-    }
-    clear() {
-      @instance.sections[0].carousel.next();
-      @instance.sections[2].carousel.next();
-    }
-    guess(number) {
-      return @instance.sections[4].carousel.children[0].updateText(number);
-    }
-    get equation() {
-      var operand1, operand2, answer, guess, guesses=['?'];
       switch(@operation) {
         case 'minus':
-          operand1=Math.round(Math.random()*100); 
-          switch(@level) {
-            case 1:
-            case 2:
-              operand2=Math.round(Math.random()*10);
-              break;
-            default:
-              operand2=operand1+Math.round(Math.random()*100);
-          }
-          answer = operand2 - operand1;
-          @instance = carousel.Sections({sets:[[operand2+'',' ',' ',' '],['\\u002D','\\u002D','\\u002D'],[operand1+'',' ',' ',' '],['\\u003D','\\u003D'],guesses]});
-          break;
-        case 'multiply':
-          operand1=Math.round(Math.random()*12); 
-          operand2=Math.round(Math.random()*12);
-          answer = operand2 * operand1;
-          @instance = carousel.Sections({sets:[[operand2+'','1','1','1'],['\\u00D7','\\u00D7','\\u00D7'],[operand1+'','1','1','1'],['\\u003D','\\u003D'],guesses]});
-          break;
-        case 'divide':
-          operand1=Math.round(Math.random()*100); 
-          operand2=Math.round(Math.random()*100);
-          answer = operand2 / operand1;
-          @instance = carousel.Sections({sets:[[operand1+'','1','1','1'],['\\u00F7','\\u00F7','\\u00F7'],[operand2+'','1','1','1'],['\\u003D','\\u003D'],guesses]});
+          @operationSign = '-';
           break;
         case 'plus':
-          switch(@level) {
-            case 1:
-              operand1=Math.ceil(Math.random()*10); 
-              operand2=Math.ceil(Math.random()*10);
-              break;
-            case 2:
-              operand1=Math.ceil(Math.random()*50); 
-              operand2=Math.ceil(Math.random()*10);
-              break;
-            case 3:
-              operand1=Math.ceil(Math.random()*100); 
-              operand2=Math.ceil(Math.random()*20);
-              break;
-            case 4:
-            default:
-              operand1=Math.ceil(Math.random()*100); 
-              operand2=Math.ceil(Math.random()*100);
-              break;
-          }
-          answer = operand2 + operand1;
-          @instance = carousel.Sections({sets:[[operand1,'1','1','1'],['\\u002B','\\u002B','\\u002B'],[operand2,'1','1','1'],['\\u003D','\\u003D'],guesses]});
+          @operationSign = '+';
+          break;
+        case 'divide':
+          @operationSign = '\\u00F7';
+          break;
+        case 'multiply':
+          @operationSign = '\\u00D7';
           break;
       }
-      return @instance;
+      @level = properties.level;
     }
-    onnext() {
-      @guessindex++;
-      if(@guessindex === @sections.sections[4].carousel.children.length) {
-        @guessindex = 0;
+    get equation() {
+      if(!@answer) {
+        switch(@operation) {
+          case 'minus':
+            @operand1=Math.round(Math.random()*100); 
+            switch(@level) {
+              case 1:
+              case 2:
+                @operand2=Math.round(Math.random()*10);
+                break;
+              default:
+                @operand2=operand1+Math.round(Math.random()*100);
+            }
+            @answer = @operand2 - @operand1;
+            break;
+          case 'multiply':
+            @operand1=Math.round(Math.random()*12); 
+            @operand2=Math.round(Math.random()*12);
+            @answer = @operand2 * @operand1;
+            break;
+          case 'divide':
+            @operand1=Math.round(Math.random()*100); 
+            @operand2=Math.round(Math.random()*100);
+            @answer = @operand2 / @operand1;
+            break;
+          case 'plus':
+            switch(@level) {
+              case 1:
+                @operand1=Math.ceil(Math.random()*10); 
+                @operand2=Math.ceil(Math.random()*10);
+                break;
+              case 2:
+                @operand1=Math.ceil(Math.random()*50); 
+                @operand2=Math.ceil(Math.random()*10);
+                break;
+              case 3:
+                @operand1=Math.ceil(Math.random()*100); 
+                @operand2=Math.ceil(Math.random()*20);
+                break;
+              case 4:
+              default:
+                @operand1=Math.ceil(Math.random()*100); 
+                @operand2=Math.ceil(Math.random()*100);
+                break;
+            }
+            @answer = @operand2 + @operand1;
+            break;
+        }
       }
-      @sections && @sections.sections && @sections.sections[4].carousel.next();
+      return @operand1 + ' ' + @operationSign + ' ' + @operand2 + ' = ';
     }
-    static init = (function() {
-      var styles = [
-        {selector:'.sections > .section',style:"border:0;width:170px;"},
-        {selector:'.sections > .section > .carousel > .field',style:"font-size:6em;background:rgba(0,0,0,0);border:0;width:170px;"}
-      ];
-      monads.Styleable(styles).on("load").onstyle();
-    })()
   }
   export class VerticalNumberStrip {
     constructor(properties={numbers:['0','1','2','3','4','5','6','7','8','9',VerticalNumberStrip.backspace]}) {
@@ -150,9 +191,25 @@ module cube {
     }
     static init = (function() {
       var styles = [
-        {selector:'.vertical-number-strip',style:"width:100px;height:140px;position:relative;margin:0 auto 40px;-webkit-perspective:1000px;float:right;"},
+        {selector:'.vertical-number-strip',style:"width:100px;height:140px;position:relative;margin:0 auto 40px;-webkit-perspective:1000px;left:45%;"},
         {selector:'.vertical-number-strip-carousel',style:"width:100%;height:100%;position:absolute;-webkit-transform-style:preserve-3d;-webkit-transform:translateZ(-192px) rotateX(0deg) translateY(-430px);"},
-        {selector:'.vertical-number-strip-carousel-number',style:"-webkit-backface-visibility:hidden;display:block;width:100px;height:70px;line-height:80px;text-align:center;font-size:50px;font-family:Albertino;"}
+        {selector:'.vertical-number-strip-carousel-number',style:"-webkit-backface-visibility:hidden;display:block;width:100px;height:70px;line-height:80px;text-align:center;font-size:50px;font-family:Albertino;text-shadow:5px 5px 10px rgba(124,116,116,0.5);"}
+      ];
+      monads.Styleable(styles).on("load").onstyle();
+    })()
+    static backspace = '\\u2716'
+  };
+  export class ResultsDropDown {
+    constructor(properties={}) {
+      private element, title;
+      @title = properties.title;
+      @element = monads.DOMable({tagName:'dl'}).on('load').attributes({'class':'results-drop-down'});
+      @title && element.add(monads.DOMable({tagName:'dt'}).on('load').add(@title));
+      return @element;
+    }
+    static init = (function() {
+      var styles = [
+        {selector:'.results-drop-down',style:"-webkit-transform-style:preserve-3d;-webkit-transform:perspective(600px) translateZ(1px);position:relative;top:100%;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
@@ -162,15 +219,15 @@ module cube {
     constructor() {
       private title;
       @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','width':'420px','color':'#e97825','font-family':'Albertino','font-size':'80px','-webkit-transform':'translateX(-220px) translateY(-120px) rotateY(-230deg) rotateX(76deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('Ninja Math');
-      @title.delay(@title.style,[{'-webkit-transform':'translateX(-140px) translateY(-120px) rotateY(-230deg) rotateX(0deg)'}],300);
+      @title.delay(@title.style,[{'-webkit-transform':'translateX(-140px) translateY(-160px) rotateY(-230deg) rotateX(0deg)'}],300);
       return @title;
     }
   }
-  class TimeTracker {
-  }
   class Checker {
-    constructor() {
-      private wrong, right, wrongAnswers, rightAnswers, total, totalCount, totalTime, currentCount;
+    constructor(properties={level:1}) {
+      private elapsed, level, wrong, right, wrongAnswers, rightAnswers, rules, total, totalCount, totalTime, currentCount;
+      @rules = Rules();
+      @level = properties.level;
       @wrongAnswers = 0;
       @wrong = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'200px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2718').insert(document.body);
       @rightAnswers = 0;
@@ -186,9 +243,23 @@ module cube {
       guess ? @right.style({'color':'green'}).updateText((++@rightAnswers)+' \\u2714'): @wrong.style({'color':'red'}).updateText((++@wrongAnswers)+' \\u2718');
       @currentCount++;
       @total.updateText(@currentCount+" of "+@totalCount);
-      if(@currentCount === @totalCount) {
-        alert('totalTime = '+(new Date().getTime() - @totalTime.getTime()));
+      if(@currentCount > @totalCount) {
+        var now = new Date().getTime();
+        var start = @totalTime.getTime();
+        @elapsed = Math.round((now - start)/1000);
+        @elapsed += 5*@wrongAnswers;
+        var belt = @rules.beltLevel(@level,@elapsed);
+        @reset();
       }
+    }
+    reset() {
+      @wrongAnswers = 0;
+      @rightAnswers = 0;
+      @totalCount = 10;
+      @currentCount = 1;
+      @right.style({'color':'transparent'}).updateText(' \\u2714');
+      @wrong.style({'color':'transparent'}).updateText(' \\u2718');
+      @total.updateText(@currentCount+" of "+@totalCount);
     }
   }
   class Levels {
@@ -231,7 +302,12 @@ module cube {
   }
   export class Container {
     constructor(properties={}) {
-      private element, cube, front, back, right, left, top, bottom;
+      private controller, element, enabled, cube, front, back, right, left, top, bottom, x, xangle, xstart, y, yangle, ystart, thresholdY, thresholdX, directionY, directionX;
+      @enabled = false;
+      @onstart = @onstart.bind(this);
+      @onswipe = @onswipe.bind(this);
+      @onend = @onend.bind(this);
+      @controller = properties.controller;
       @cube = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'cube'});
       @front = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'front'});
       properties.front && @front.add(properties.front);
@@ -260,7 +336,9 @@ module cube {
           ).add(
 	    @bottom
           )
-      );
+      ).on(['touchstart'],@onstart).on(['touchmove'],@onswipe).on(['touchend'],@onend);
+      @xangle = 0;
+      @yangle = 0;
     }
     showFront() {
       @cube.attributes({'class':'show-front'});
@@ -286,54 +364,121 @@ module cube {
       @cube.attributes({'class':'show-bottom'});
       return this;
     }
+    onstart(event) {
+      event.preventDefault();
+      @ystart = event.touches[0].clientY;
+      @xstart = event.touches[0].clientX;
+      @cube.element().style.webkitTransition = 'none';
+      return this;
+    }
+    onswipe(event) {
+      event.preventDefault();
+      if(@enabled) {
+        @y = event.touches[0].clientY;
+        @x = event.touches[0].clientX;
+        @thresholdY = Math.abs(@y - @ystart);
+        @directionY = @y - @ystart;
+        @thresholdX = Math.abs(@x - @xstart);
+        @directionX = @x - @xstart;
+        if(@thresholdX > @thresholdY && @thresholdX > 10) {
+          if(@directionX < 0) {
+            var tangle = @xangle + @directionX;
+            @cube.element().style.webkitTransform = 'translateZ(-500px) rotateY('+tangle+'deg)';
+          }
+        }
+      }
+      return this;
+    }
+    onend(event) {
+      event.preventDefault();
+      @cube.element().style.webkitTransition = '-webkit-transform 1s';
+      if(@enabled) {
+/*
+      if(@thresholdY > @thresholdX && @thresholdY > 10) {
+        if(@directionY < 0) {
+          @yangle += 90;
+          @cube.style({'-webkit-transform':'translateZ(-100px) rotateX('+@yangle+'deg)'});
+        } else {
+          @yangle -= 90;
+          @cube.style({'-webkit-transform':'translateZ(-100px) rotateX('+@yangle+'deg)'});
+        }
+      } else if(@thresholdX > @thresholdY && @thresholdX > 10) {
+        if(@directionX > 0) {
+          @xangle += 90;
+          @cube.style({'-webkit-transform':'translateZ(-100px) rotateY('+@xangle+'deg)'});
+        } else {
+          @xangle -= 90;
+          @cube.style({'-webkit-transform':'translateZ(-100px) rotateY('+@xangle+'deg)'});
+        }
+      }
+*/
+        if(@thresholdX > @thresholdY && @thresholdX > 10) {
+          if(@directionX < 0) {
+            @rotateRight();
+            @controller.onnext(event);
+          }
+        }
+      }
+      return this;
+    }
+    rotateRight() {
+      @xangle -= 90;
+      @cube.element().style.webkitTransform = 'translateZ(-500px) rotateY('+@xangle+'deg)';
+      return this;
+    }
     static init = (function() {
       var styles = [
-        {selector:'.container',style:"top:25%;width:200px;height:200px;position:relative;margin:0 auto 40px;-webkit-perspective:1000px;"},
+        {selector:'.container',style:"top:15%;width:200px;height:200px;position:relative;margin:0 auto 40px;-webkit-perspective:1000px;"},
         {selector:'#cube',style:"width:100%;height:100%;position:absolute;-webkit-transform-style:preserve-3d;-webkit-transition:-webkit-transform 1s;"},
-        {selector:'#cube.show-front',style:"-webkit-transform:translateZ(-100px);"},
-        {selector:'#cube.show-back',style:"-webkit-transform:translateZ(-100px) rotateX(-180deg);"},
-        {selector:'#cube.show-right',style:"-webkit-transform:translateZ(-100px) rotateY(-90deg);"},
-        {selector:'#cube.show-left',style:"-webkit-transform:translateZ(-100px) rotateY(90deg);"},
-        {selector:'#cube.show-top',style:"-webkit-transform:translateZ(-100px) rotateX(-90deg);"},
-        {selector:'#cube.show-bottom',style:"-webkit-transform:translateZ(-100px) rotateX(90deg);"},
-        {selector:'#cube div',style:"display:block;position:absolute;width:196px;height:196px;-webkit-backface-visibility:hidden;"},
-        {selector:'#cube .front',style:"-webkit-transform:translateZ(100px);"},
-        {selector:'#cube .back',style:"-webkit-transform:rotateX(-180deg) translateZ(100px);"},
-        {selector:'#cube .right',style:"-webkit-transform:rotateY(90deg) translateZ(100px);"},
-        {selector:'#cube .left',style:"-webkit-transform:rotateY(-90deg) translateZ(100px);"},
-        {selector:'#cube .top',style:"-webkit-transform:rotateX(90deg) translateZ(100px);"},
-        {selector:'#cube .bottom',style:"-webkit-transform:rotateX(-90deg) translateZ(100px);"}
+        {selector:'#cube.show-front',style:"-webkit-transform:translateZ(-500px);"},
+        {selector:'#cube.show-back',style:"-webkit-transform:translateZ(-500px) rotateX(-180deg);"},
+        {selector:'#cube.show-right',style:"-webkit-transform:translateZ(-500px) rotateY(-90deg);"},
+        {selector:'#cube.show-left',style:"-webkit-transform:translateZ(-500px) rotateY(90deg);"},
+        {selector:'#cube.show-top',style:"-webkit-transform:translateZ(-500px) rotateX(-90deg);"},
+        {selector:'#cube.show-bottom',style:"-webkit-transform:translateZ(-500px) rotateX(90deg);"},
+        {selector:'#cube div',style:"display:block;position:absolute;width:100%;height:100%;-webkit-backface-visibility:hidden;"},
+        {selector:'#cube .front',style:"-webkit-transform:translateZ(500px);"},
+        {selector:'#cube .back',style:"-webkit-transform:rotateY(180deg) translateZ(500px);"},
+        {selector:'#cube .right',style:"-webkit-transform:rotateY(90deg) translateZ(500px);"},
+        {selector:'#cube .left',style:"-webkit-transform:rotateY(-90deg) translateZ(500px);"},
+        {selector:'#cube .top',style:"-webkit-transform:rotateX(90deg) translateZ(500px);"},
+        {selector:'#cube .bottom',style:"-webkit-transform:rotateX(-90deg) translateZ(500px);"},
+        {selector:'@-webkit-keyframes swipehint',style:"0% {-webkit-transform: rotateY(95deg) translateZ(500px);}30% {-webkit-transform: rotateY(85deg) translateZ(500px);}60%  {-webkit-transform: rotateY(93deg) translateZ(500px);}80% {-webkit-transform: rotateY(87deg) translateZ(500px);}100% {-webkit-transform: rotateY(90deg) translateZ(500px);}"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
   };
-  class Main {
+  export class Main {
     constructor() {
-      private activeSide, bestGuess, container, checker, color, equation, frame, level, levels, ninja, operation, problems, play, screens, sequence, title;
+      private activeSide, bestGuess, container, checker, color, equation, equations, frame, level, ninja, operation, problems, play, screens, sequence, title;
       @ontouchstart = @ontouchstart.bind(this);
       @ontouchmove = @ontouchmove.bind(this);
       @ontouchend = @ontouchend.bind(this);
+      @onorientationchange = @onorientationchange.bind(this);
       @onguess = @onguess.bind(this);
       @onnext = @onnext.bind(this);
       @onplay = @onplay.bind(this);
       @onlevel = @onlevel.bind(this);
+      @reset = @reset.bind(this);
+      @swipehint = @swipehint.bind(this);
       controller.Controller.subscribe('guess',@onguess);
       controller.Controller.subscribe('next',@onnext);
       controller.Controller.subscribe('play',@onplay);
       controller.Controller.subscribe('level',@onlevel);
+      @equations = [];
       @activeSide = 0;
       @bestGuess = '?';
-      @screens = Container({front:Levels()}).showFront();
+      @screens = Container({controller:this,top:Levels()}).showTop();
       @level = 1;
-      @levels = Levels();
       @sequence = [
-        {side:'back',board:planks.WoodPlank1()},
-        {side:'top',board:planks.WoodPlank2()},
-        {side:'bottom',board:planks.WoodPlank3()}
+        {side:'right',board:planks.WoodPlank3()},
+        {side:'back',board:planks.WoodPlank3()},
+        {side:'left',board:planks.WoodPlank3()},
+        {side:'front',board:planks.WoodPlank3()}
       ];
-      @screens.back.add(@sequence[0].board.element);
-      @screens.top.add(@sequence[1].board.element).style({'display':'none'});
-      @screens.bottom.add(@sequence[2].board.element).style({'display':'none'});
+      @screens.right.add(@sequence[0].board.element);
+      @screens.back.add(@sequence[1].board.element);
+      @screens.left.add(@sequence[2].board.element);
       @title = Title();
       @problems = [];
       @ninja = cubesvgs.Ninja();
@@ -348,6 +493,16 @@ module cube {
       ).insert(document.body);
       @screens.element.insert(document.body);
       monads.DOMable({element:document.body}).on('touchstart',@ontouchstart).on('touchmove',@ontouchmove).on(['touchend'],@ontouchend);
+      monads.DOMable({element:window}).on('orientationchange',@onorientationchange);
+      @onorientationchange();
+    }
+    reset(side) {
+      @screens.front.removeChildren().add(@sequence[3].board.element);
+      return this;
+    }
+    swipehint() {
+      @screens.right.style({'-webkit-animation':'swipehint 1s'});
+      return this;
     }
     onlevel(event) {
       var plus = cubesvgs.Plus(), minus, multiply, divide;
@@ -355,24 +510,24 @@ module cube {
         case "1":
           @level = 1;
           minus = cubesvgs.Minus();
-          @screens.right.add(plus).add(minus);
-          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},500);
+          @screens.front.add(plus).add(minus);
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},250);
           @ninja.rotateSword();
           break;
         case "2":
           @level = 2;
           minus = cubesvgs.Minus();
-          @screens.right.add(plus).add(minus);
-          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},500);
+          @screens.front.add(plus).add(minus);
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},250);
           @ninja.raiseSword();
           break;
         case "3":
           @level = 3;
           minus = cubesvgs.Minus();
           multiply = cubesvgs.Multiply();
-          @screens.right.add(plus).add(minus).add(multiply);
-          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},500);
-          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(150%)','opacity':'1'})},1000);
+          @screens.front.add(plus).add(minus).add(multiply);
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},250);
+          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(150%)','opacity':'1'})},500);
           @ninja.raiseSword();
           break;
         case "4":
@@ -381,26 +536,32 @@ module cube {
           minus = cubesvgs.Minus();
           multiply = cubesvgs.Multiply();
           divide = cubesvgs.Divide();
-          @screens.right.add(plus).add(minus).add(multiply).add(divide);
-          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},500);
-          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(150%)','opacity':'1'})},1000);
-          setTimeout(function(){divide.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(225%)','opacity':'1'})},1500);
+          @screens.front.add(plus).add(minus).add(multiply).add(divide);
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},250);
+          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(150%)','opacity':'1'})},500);
+          setTimeout(function(){divide.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(225%)','opacity':'1'})},1000);
           @ninja.raiseSword();
           break;
       }
-      @screens.showRight();
+      @screens.showFront();
     }
     onplay(event) {
-      @checker = Checker();
+      @checker = Checker({level:@level});
       @color = event.detail.color, @operation = event.detail.operation;
+      for(var i = 0; i < 10; ++i) {
+        @equations.push(Equation({operation:@operation,level:@level,color:@color}));
+      }
       @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
-      @equation = Equation({operation:@operation,level:@level,color:@color});
-      @screens[@sequence[@activeSide%3].side].add(@equation.instance.element);
-      @screens['show'+@sequence[@activeSide%3].side.substring(0,1).toUpperCase()+@sequence[@activeSide%3].side.substring(1)]();
+      @equation = @equations.pop();
+      @sequence[@activeSide%4].board.addEquation(@equation.equation + ' ' + @bestGuess);
+      @screens.rotateRight();
       @problems.push(@equation);
       VerticalNumberStrip().insert(document.body);
+      @screens.top.style({'display':'none'});
+      setTimeout(@reset, 500);
       @ninja.play();
-      @screens.front.style({'display':'none'});
+      @screens.element.add(ResultsDropDown({title:belts.WhiteBelt()}));
+      setTimeout(@swipehint, 500);
     }
     onguess(event) {
       var number = event.detail;
@@ -415,27 +576,23 @@ module cube {
           @bestGuess += number;
         }
       }
-      @equation.guess(@bestGuess);
+      @sequence[@activeSide%4].board.addEquation(@equation.equation + ' ' + @bestGuess);
+      @screens.enabled = true;
     }
     onnext(event) {
-      var answer = @equation.answer();
+      var answer = @equation.answer;
       var guess = parseInt(@bestGuess);
       var correct = answer === guess;
-      var x = document.documentElement.clientWidth/2;
-      var y = document.documentElement.clientHeight/3;
-      correct && @sequence[@activeSide%3].board.breakBoard();
       @checker.answer(correct);
       @bestGuess = '?';
-      var oldboard = @sequence[@activeSide%3].board;
+      @screens.enabled = false;
+      var oldboard = @sequence[@activeSide%4].board;
       @activeSide++;
       var oldequation = @equation;
-      @equation = Equation({operation:@operation,level:@level,color:@color});
-      @sequence[@activeSide%3].board.repairBoard().showBoard();
-      @screens[@sequence[@activeSide%3].side].style({'display':'block'}).add(@equation.instance.element);
-      @screens['show'+@sequence[@activeSide%3].side.substring(0,1).toUpperCase()+@sequence[@activeSide%3].side.substring(1)]();
+      @equation = @equations.pop();
+      @sequence[@activeSide%4].board.addEquation(@equation.equation + ' ' + @bestGuess);
       setTimeout(function(){
-        oldequation.instance.element.remove();
-        oldboard.hideBoard();
+        oldequation.equation = "";
       },500);
       @problems.push(@equation);
     }
@@ -447,6 +604,17 @@ module cube {
     }
     ontouchend(event) {
       event.preventDefault();
+    }
+    onorientationchange(event) {
+	if ( window.orientation == 0 ) {
+//	 alert ('Portrait Mode, Home Button bottom');
+	} else if ( window.orientation == 90 ) {
+//	 alert ('Landscape Mode, Home Button right');
+	} else if ( window.orientation == -90 ) {
+//	 alert ('Landscape Mode, Home Button left');
+	} else if ( window.orientation == 180 ) {
+//	 alert ('Portrait Mode, Home Button top');
+	}
     }
     static blackbelt = '#211e1e'
     static bluebelt = '#00abee'
@@ -474,7 +642,7 @@ module cube {
     static init = (function() {
       var styles = [
         {selector:'@font-face',style:'font-family:Albertino;src:url(/cube/lib/Albertino_1.0.ttf);'},
-        {selector:'body',style:"background:white"},
+        {selector:'body',style:"background:white;"},
         {selector:'#container',style:"position:absolute;left:45%;margin-left:-100px;top:35%;margin-top:-100px;height:200px;width:200px;-webkit-perspective:800;"},
         {selector:'#frame',style:"opacity: 1.0;width: 200px;-webkit-transform-style: preserve-3d;-webkit-transform: translateZ(150px);-webkit-transition: all 0.5s linear;"},
         {selector:'.inner',style:"height:200px;width:200px;-webkit-transform-style: preserve-3d;-webkit-transform: rotateY(230deg);"},
@@ -485,7 +653,7 @@ module cube {
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
-  }
+  };
   class AppType {
     constructor() {
       Main();

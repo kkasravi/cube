@@ -1,3 +1,3 @@
 module monads from 'monads';
 module belts from 'belts';
-belts.GreenBelt().insert(document.body);
+belts.WhiteBelt().insert(document.body);

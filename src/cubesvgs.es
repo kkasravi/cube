@@ -7,6 +7,7 @@ module cubesvgs {
   export class Ninja {
     constructor() {
       private belt, element, id, hands, leftArm, ninja, raiseSwordDuration, rightArm, sword, swordblade;
+      @changeSword = @changeSword.bind(this);
       @id = 'ninja';
       @raiseSwordDuration = '500ms';
       @ninja = svg.Svg({id:@id,width:"428pt",height:"596pt"}).
@@ -93,18 +94,19 @@ module cubesvgs {
       @rightArm.style.webkitTransform = 'rotate(-35deg)';
       return this;
     }
-    play() {
-      @element.style({'-webkit-transform':'scale(0.6,0.6) translateX(145%) translateY(40%)'});
+    changeSword() {
       @ninja.svg.getElementById('changesword').beginElement();
+      return this;
+    }
+    play() {
+      @element.style({'-webkit-transform':'scale(0.6,0.6) translateX(10%) translateY(25%)'});
       @swordblade.style.webkitTransition = 'fill 1s';
       @swordblade.style.fill = 'rgb(233,120,37)';
       @swordblade.style.filter = 'url(#drop-shadow)';
       @sword.style.webkitTransform = 'rotate(53deg)';
       @leftArm.style.webkitTransform = 'translateY(10px)';
       @rightArm.style.webkitTransform = 'rotate(-20deg)';
-      @sword.addEventListener('touchend',function(event){
-        controller.Controller.publish(events.CustomEvent({type:'next',canBubble:false,isCanceleable:true}));
-      });
+      setTimeout(@changeSword,2000);
       return this;
     }
     static init = (function() {
