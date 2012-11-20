@@ -10,7 +10,8 @@ module cubesvgs {
       @changeSword = @changeSword.bind(this);
       @id = 'ninja';
       @raiseSwordDuration = '500ms';
-      @ninja = svg.Svg({id:@id,width:"428pt",height:"596pt"}).
+      @ninja = svg.Svg({id:@id,width:'27em',height:'29em'}).
+          g({transform:"matrix(0.8,0,0,0.8,0.0,0.0)"}).
           path({d:"m 310.83594,189.77734 c 0,45.51172 -39.77344,82.40235 -88.83203,82.40235 -49.0625,0 -88.83204,-36.89063 -88.83204,-82.40235 0,-45.51172 39.76954,-82.40234 88.83204,-82.40234 49.05859,0 88.83203,36.89062 88.83203,82.40234",style:"fill:#211e1e;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           path({d:"m 303.28125,183.76953 c 0,0 -49.76172,-31.14062 -111.14063,-31.14062 -19.16015,0 -37.18359,3.03125 -52.91796,7.20312 -3.90625,9.28125 -6.05079,19.38281 -6.05079,29.94531 0,4.21875 0.34375,8.36328 1.00391,12.41016 16.875,3.98828 62.8125,5.55469 84.05078,5.55469 61.38281,0 85.05469,-23.97266 85.05469,-23.97266",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           g({id:'eyes'}).
@@ -55,9 +56,10 @@ module cubesvgs {
             animateTransform({'id':'swordmove2','xlink:href':'#sword','attributeName':'transform','attributeType':'XML','type':'rotate','from':'0','to':'20','begin':'indefinite','dur':@raiseSwordDuration,'additive':'replace','fill':"freeze"}).end().
             animateMotion({'id':'armmove1','xlink:href':'#rightArm','path':"m 0,0 l 0,-2 0,-4 0,-12",'begin':'indefinite','dur':@raiseSwordDuration,'repeatCount':"1",'rotate':"0",'fill':"freeze"}).end().
             animateMotion({'id':'armmove2','xlink:href':'#leftArm','path':"m 0,0 l 0,2 0,4 0,12",'begin':'indefinite','dur':@raiseSwordDuration,'repeatCount':"1",'rotate':"0",'fill':"freeze"}).end().
+        end().
       end();
       monads.DOMable({element:document.body}).on('load').style({'-webkit-perspective':'1000px'});
-      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'ninja'}).reflect('-77%').add(@ninja.svg);
+      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'ninja'}).reflect('-30%').add(@ninja.svg);
       @belt = @ninja.svg.getElementById('belt');
       @hands = @ninja.svg.getElementById('hands');
       @leftArm = @ninja.svg.getElementById('leftArm');
@@ -99,19 +101,18 @@ module cubesvgs {
       return this;
     }
     play() {
-      @element.style({'-webkit-transform':'scale(0.6,0.6) translateX(10%) translateY(25%)'});
+      @element.element().style.webkitTransform = 'translateY(10em)';
       @swordblade.style.webkitTransition = 'fill 1s';
       @swordblade.style.fill = 'rgb(233,120,37)';
       @swordblade.style.filter = 'url(#drop-shadow)';
       @sword.style.webkitTransform = 'rotate(53deg)';
-      @leftArm.style.webkitTransform = 'translateY(10px)';
-      @rightArm.style.webkitTransform = 'rotate(-20deg)';
+      @rightArm.style.webkitTransform = 'rotate(-15deg)';
       setTimeout(@changeSword,2000);
       return this;
     }
     static init = (function() {
       var styles = [
-        {selector:'.ninja',style:"position:absolute;-webkit-transform-style:preserve-3d;-webkit-transition:-webkit-transform 0.3s linear;-webkit-transform:scale(0.6,0.6);"}
+        {selector:'.ninja',style:"position:absolute;-webkit-transition:-webkit-transform 0.5s;-webkit-transform-style:preserve-3d;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
@@ -121,8 +122,8 @@ module cubesvgs {
       private element, id;
       @ontouchend = @ontouchend.bind(this);
       @id = Math.uuid(8);
-      @element = monads.DOMable({tagName:'div'}).on('load').add(
-        svg.Svg({width:"180.0",height:"200.0"}).
+      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'operators'}).add(
+        svg.Svg({width:"160.0",height:"200.0"}).
           defs().
             clipPath({clipPathUnits:"userSpaceOnUse",id:@id+"clipPath4800"}).
               path({d:"M 0,0 851,0 851,851 0,851 0,0 z"}).end().
@@ -189,7 +190,7 @@ module cubesvgs {
             path({d:"m 682.646,639.988 -42.519,0 0,42.521 c 0,11.693 -9.567,21.258 -21.26,21.26 -11.693,0 -21.26,-9.567 -21.26,-21.26 l 0,-42.521 -42.519,0 c -11.694,0 -21.26,-9.567 -21.26,-21.261 0,-11.691 9.566,-21.258 21.26,-21.258 l 42.519,0 0,-42.519 c 0,-11.693 9.567,-21.26 21.26,-21.26 11.693,0 21.26,9.567 21.26,21.26 l 0,42.519 42.519,0 c 11.694,0 21.26,9.567 21.26,21.258 0,11.694 -9.566,21.261 -21.26,21.261",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           end().
         end().svg
-      ).reflect('-28%').on(['touchend'],@ontouchend);
+      ).reflect('-40%').on(['touchend'],@ontouchend);
       return @element;
     }
     ontouchend(event) {
@@ -201,8 +202,8 @@ module cubesvgs {
       private element, id;
       @ontouchend = @ontouchend.bind(this);
       @id = Math.uuid(8);
-      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'multiply'}).add(
-        svg.Svg({width:"200.0",height:"200.0"}).
+      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'multiply operators'}).add(
+        svg.Svg({width:"160.0",height:"200.0"}).
           defs().
             clipPath({clipPathUnits:"userSpaceOnUse",id:@id+"clipPath2346"}).
               path({d:"M 0,0 851,0 851,851 0,851 0,0 z"}).end().
@@ -270,7 +271,7 @@ module cubesvgs {
             path({d:"m 261.297,618.729 30.066,30.066 c 8.27,8.27 8.268,21.797 0,30.066 -8.267,8.268 -21.798,8.27 -30.066,0 l -30.067,-30.066 -30.066,30.066 c -8.267,8.268 -21.797,8.268 -30.066,0 -8.268,-8.267 -8.268,-21.796 0,-30.066 L 201.164,618.729 171.1,588.664 c -8.27,-8.268 -8.268,-21.799 0,-30.066 8.267,-8.268 21.797,-8.27 30.066,0 l 30.064,30.064 30.067,-30.064 c 8.268,-8.27 21.797,-8.268 30.064,0 8.27,8.267 8.27,21.797 0,30.066 l -30.064,30.065",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           end().
         end().svg
-      ).reflect('-28%').on(['touchend'],@ontouchend);
+      ).reflect('-40%').on(['touchend'],@ontouchend);
       return @element;
     }
     ontouchend(event) {
@@ -278,7 +279,7 @@ module cubesvgs {
     }
     static init = (function() {
       var styles = [
-        {selector:'.multiply',style:"opacity:0;"}
+        {selector:'.multiply',style:"opacity:0;-webkit-transform:translateX(-200%);"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
@@ -288,8 +289,8 @@ module cubesvgs {
       private element, id;
       @ontouchend = @ontouchend.bind(this);
       @id = Math.uuid(8);
-      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'divide'}).add(
-        svg.Svg({width:"200.0",height:"200.0"}).
+      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'divide operators'}).add(
+        svg.Svg({width:"160.0",height:"200.0"}).
           defs().
             clipPath({clipPathUnits:"userSpaceOnUse",id:@id+"clipPath7254"}).
               path({d:"M 0,0 851,0 851,851 0,851 0,0 z"}).end().
@@ -351,7 +352,7 @@ module cubesvgs {
             path({d:"m 295.012,252.354 -127.559,0 c -11.693,0 -21.26,-9.569 -21.26,-21.262 0,-11.692 9.567,-21.258 21.26,-21.258 l 127.559,0 c 11.693,0 21.26,9.566 21.26,21.258 0,11.693 -9.567,21.262 -21.26,21.262 z m -63.78,21.259 c 11.741,0 21.26,9.518 21.26,21.26 0,11.742 -9.519,21.26 -21.26,21.26 -11.742,0 -21.259,-9.518 -21.259,-21.26 0,-11.742 9.517,-21.26 21.259,-21.26 z m 0,-85.039 c -11.742,0 -21.259,-9.517 -21.259,-21.259 0,-11.743 9.517,-21.26 21.259,-21.26 11.741,0 21.26,9.517 21.26,21.26 0,11.742 -9.519,21.259 -21.26,21.259",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           end().
         end().svg
-      ).reflect('-28%').on(['touchend'],@ontouchend);
+      ).reflect('-40%').on(['touchend'],@ontouchend);
       return @element;
     }
     ontouchend(event) {
@@ -359,7 +360,7 @@ module cubesvgs {
     }
     static init = (function() {
       var styles = [
-        {selector:'.divide',style:"opacity:0;"}
+        {selector:'.divide',style:"opacity:0;-webkit-transform:translateX(-300%);"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
@@ -369,8 +370,8 @@ module cubesvgs {
       private element, id;
       @ontouchend = @ontouchend.bind(this);
       @id = Math.uuid(8);
-      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'minus'}).add(
-        svg.Svg({width:"350.0",height:"270.0"}).
+      @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'minus operators'}).add(
+        svg.Svg({width:"160.0",height:"200.0"}).
           defs().
             clipPath({clipPathUnits:"userSpaceOnUse",id:@id+"clipPath9698"}).
               path({d:"M 0,0 851,0 851,851 0,851 0,0 z"}).end().
@@ -433,7 +434,7 @@ module cubesvgs {
             path({d:"m 703.906,231.093 c 0,-11.692 -9.566,-21.259 -21.26,-21.259 l -127.558,0 c -11.694,0 -21.26,9.567 -21.26,21.259 0,11.693 9.566,21.261 21.26,21.261 l 127.558,0 c 11.694,0 21.26,-9.568 21.26,-21.261",style:"fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"}).end().
           end().
         end().svg
-      ).reflect('-28%');
+      ).reflect('-40%');
       @element.on(['touchend'],@ontouchend);
       return @element;
     }
@@ -442,18 +443,17 @@ module cubesvgs {
     }
     static init = (function() {
       var styles = [
-        {selector:'.minus',style:"opacity:0;"}
+        {selector:'.minus',style:"-webkit-transform:translateX(-100%);opacity:0;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
   };
-/*
   export class Shuriken {
     constructor() {
       private element, id;
       @id = Math.uuid(8);
       @element = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'shuriken'}).add(
-        svg.Svg({width:"300",height:"300"}).
+        svg.Svg({width:"5em",height:"5em"}).
           defs().
             linearGradient({id:@id+"linearGradient4552"}).
               stop({style:"stop-color:#ffffff;stop-opacity:1;",offset:"0"}).end().
@@ -492,10 +492,9 @@ module cubesvgs {
     static init = (function() {
       var styles = [
         {selector:'@-webkit-keyframes shurikenspin',style:"from {-webkit-transform:rotate(0deg);} to {-webkit-transform:rotate(360deg);}"},
-        {selector:'.shuriken',style:"position:absolute;top:4%;left:24%;-webkit-transform-origin-x:42px;-webkit-transform-origin-y:44px;-webkit-animation:shurikenspin 1500ms linear infinite;"}
+        {selector:'.shuriken',style:"position:absolute;z-index:500;top:4%;left:24%;-webkit-transform-origin-x:42px;-webkit-transform-origin-y:44px;-webkit-animation:shurikenspin 1500ms linear infinite;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
   };
-*/
 }

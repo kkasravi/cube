@@ -2,10 +2,12 @@
 cwd=$(pwd)
 if [ $# != 0 ]; then
   cd ~/transpiler
-  a=${1##*/}
-  b=${a%.es}.js
-  echo ${cwd}/$1
-  bin/transpiler ${cwd}/$1 > ${cwd}/lib/$b
+  for i in $@;do
+    a=${i##*/}
+    b=${a%.es}.js
+    echo ${cwd}/$i
+    bin/transpiler ${cwd}/$i > ${cwd}/lib/$b
+  done
 else 
   for i in src/*.es;
   do

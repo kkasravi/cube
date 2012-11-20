@@ -18,6 +18,7 @@ module cube {
   module events from 'events';
   module svg from 'svg';
   module cubesvgs from 'cubesvgs';
+  module cubes from 'cubes';
   module planks from 'planks';
   module belts from 'belts';
   class Rules {
@@ -128,7 +129,7 @@ module cube {
                 @operand2=Math.round(Math.random()*10);
                 break;
               default:
-                @operand2=operand1+Math.round(Math.random()*100);
+                @operand2=@operand1+Math.round(Math.random()*100);
             }
             @answer = @operand2 - @operand1;
             break;
@@ -181,7 +182,7 @@ module cube {
       var theta = 50 / @numbers.length;
       @numbers.forEach(function(number,i) {
         var deg = -55+theta*i;
-        var panel = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'rotateX('+deg+'deg) translateZ(192px)'}).attributes({'class':'vertical-number-strip-carousel-number'}).text(number).on(['touchend'],@onselect.curry(number));
+        var panel = monads.DOMable({tagName:'div'}).on('load').attributes({'class':'vertical-number-strip-carousel-number'}).text(number).on(['touchend'],@onselect.curry(number));
         @carousel.add(panel);
       }, this);
       return @element;
@@ -191,9 +192,9 @@ module cube {
     }
     static init = (function() {
       var styles = [
-        {selector:'.vertical-number-strip',style:"width:100px;height:140px;position:relative;margin:0 auto 40px;-webkit-perspective:1000px;left:45%;"},
-        {selector:'.vertical-number-strip-carousel',style:"width:100%;height:100%;position:absolute;-webkit-transform-style:preserve-3d;-webkit-transform:translateZ(-192px) rotateX(0deg) translateY(-430px);"},
-        {selector:'.vertical-number-strip-carousel-number',style:"-webkit-backface-visibility:hidden;display:block;width:100px;height:70px;line-height:80px;text-align:center;font-size:50px;font-family:Albertino;text-shadow:5px 5px 10px rgba(124,116,116,0.5);"}
+        {selector:'.vertical-number-strip',style:"width:100px;height:140px;position:absolute;right:0rem;"},
+        {selector:'.vertical-number-strip-carousel',style:"width:100%;height:100%;position:relative;"},
+        {selector:'.vertical-number-strip-carousel-number',style:"width:100px;text-align:center;font-size:3rem;font-family:Albertino;text-shadow:5px 5px 10px rgba(124,116,116,0.5);"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
@@ -218,8 +219,7 @@ module cube {
   class Title {
     constructor() {
       private title;
-      @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','width':'420px','color':'#e97825','font-family':'Albertino','font-size':'80px','-webkit-transform':'translateX(-220px) translateY(-120px) rotateY(-230deg) rotateX(76deg)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('Ninja Math');
-      @title.delay(@title.style,[{'-webkit-transform':'translateX(-140px) translateY(-160px) rotateY(-230deg) rotateX(0deg)'}],300);
+      @title = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','white-space':'nowrap','height':'100px','width':'100%','color':'#e97825','font-family':'Albertino','font-size':'7rem','top':'5%','left':'40%'}).textShadow(Main.shadow).text('Ninja Math');
       return @title;
     }
   }
@@ -229,12 +229,12 @@ module cube {
       @rules = Rules();
       @level = properties.level;
       @wrongAnswers = 0;
-      @wrong = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'200px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2718').insert(document.body);
+      @wrong = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'200px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'3rem','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2718');//.insert(document.body);
       @rightAnswers = 0;
-      @right = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'350px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2714').insert(document.body);
+      @right = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'350px','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'3rem','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text('  \\u2714');//.insert(document.body);
       @totalCount = 10;
       @currentCount = 1;
-      @total = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'90%','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'50px','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text(@currentCount+" of "+@totalCount).insert(document.body);
+      @total = monads.DOMable({tagName:'div'}).on('load').style({'position':'absolute','top':'0px','right':'90%','white-space':'nowrap','height':'100px','width':'100px','color':'transparent','font-family':'Albertino','font-size':'3rem','-webkit-transform':'translateY(0%)','-webkit-transition':'-webkit-transform 400ms linear'}).textShadow(Main.shadow).text(@currentCount+" of "+@totalCount);//.insert(document.body);
     }
     answer(guess) {
       if(!@totalTime) {
@@ -269,11 +269,11 @@ module cube {
       this.ontwo = this.ontwo.bind(this);
       this.onthree = this.onthree.bind(this);
       this.onfour = this.onfour.bind(this);
-      @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('levels:');
-      @one = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateY(100px)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('1').on(['touchend'],this.onone);
-      @two = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(80px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('2').on(['touchend'],this.ontwo);
-      @three = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(160px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('3').on(['touchend'],this.onthree);
-      @four = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(240px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'60px'}).textShadow(Main.shadow).text('4').on(['touchend'],this.onfour);
+      @title = monads.DOMable({tagName:'div'}).on('load').style({'white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'5rem','left':'40%','text-align':'left'}).textShadow(Main.shadow).text('levels:');
+      @one = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateY(100px)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'4rem','left':'40%','text-align':'left'}).textShadow(Main.shadow).text('1').on(['touchend'],this.onone);
+      @two = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(80px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'4rem','left':'40%','text-align':'left'}).textShadow(Main.shadow).text('2').on(['touchend'],this.ontwo);
+      @three = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(160px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'4rem','left':'40%','text-align':'left'}).textShadow(Main.shadow).text('3').on(['touchend'],this.onthree);
+      @four = monads.DOMable({tagName:'div'}).on('load').style({'-webkit-transform':'translateX(240px) translateY(100px) rotateY(0deg)','white-space':'nowrap','height':'100px','color':'#78bf2b','font-family':'Albertino','font-size':'4rem','left':'40%','text-align':'left'}).textShadow(Main.shadow).text('4').on(['touchend'],this.onfour);
       @levels = monads.DOMable({tagName:'div'}).on('load').add(
         @title
       ).add(
@@ -428,7 +428,9 @@ module cube {
     }
     static init = (function() {
       var styles = [
-        {selector:'.container',style:"top:15%;width:200px;height:200px;position:relative;margin:0 auto 40px;-webkit-perspective:1000px;"},
+        {selector:'#page',style:"margin:0 auto;padding 0 1em;"},
+        {selector:'.container',style:"position:absolute;top:20%;width:100%;height:20%;-webkit-perspective:1000px;-webkit-transition:-webkit-transform 1s;"},
+        {selector:'.operators',style:"left:40%;text-align:start !important;width:auto !important;"},
         {selector:'#cube',style:"width:100%;height:100%;position:absolute;-webkit-transform-style:preserve-3d;-webkit-transition:-webkit-transform 1s;"},
         {selector:'#cube.show-front',style:"-webkit-transform:translateZ(-500px);"},
         {selector:'#cube.show-back',style:"-webkit-transform:translateZ(-500px) rotateX(-180deg);"},
@@ -436,7 +438,7 @@ module cube {
         {selector:'#cube.show-left',style:"-webkit-transform:translateZ(-500px) rotateY(90deg);"},
         {selector:'#cube.show-top',style:"-webkit-transform:translateZ(-500px) rotateX(-90deg);"},
         {selector:'#cube.show-bottom',style:"-webkit-transform:translateZ(-500px) rotateX(90deg);"},
-        {selector:'#cube div',style:"display:block;position:absolute;width:100%;height:100%;-webkit-backface-visibility:hidden;"},
+        {selector:'#cube div',style:"display:block;position:absolute;width:100%;height:100%;text-align:center;-webkit-backface-visibility:hidden;"},
         {selector:'#cube .front',style:"-webkit-transform:translateZ(500px);"},
         {selector:'#cube .back',style:"-webkit-transform:rotateY(180deg) translateZ(500px);"},
         {selector:'#cube .right',style:"-webkit-transform:rotateY(90deg) translateZ(500px);"},
@@ -450,7 +452,7 @@ module cube {
   };
   export class Main {
     constructor() {
-      private activeSide, bestGuess, container, checker, color, equation, equations, frame, level, ninja, operation, problems, play, screens, sequence, title;
+      private activeSide, bestGuess, checker, color, equation, equations, grid, level, ninja, operation, page, problems, play, screens, sequence, title;
       @ontouchstart = @ontouchstart.bind(this);
       @ontouchmove = @ontouchmove.bind(this);
       @ontouchend = @ontouchend.bind(this);
@@ -468,13 +470,14 @@ module cube {
       @equations = [];
       @activeSide = 0;
       @bestGuess = '?';
+      @page = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'page'});
       @screens = Container({controller:this,top:Levels()}).showTop();
       @level = 1;
       @sequence = [
-        {side:'right',board:planks.WoodPlank3()},
-        {side:'back',board:planks.WoodPlank3()},
-        {side:'left',board:planks.WoodPlank3()},
-        {side:'front',board:planks.WoodPlank3()}
+        {side:'right',board:planks.WoodPlank()},
+        {side:'back',board:planks.WoodPlank()},
+        {side:'left',board:planks.WoodPlank()},
+        {side:'front',board:planks.WoodPlank()}
       ];
       @screens.right.add(@sequence[0].board.element);
       @screens.back.add(@sequence[1].board.element);
@@ -482,22 +485,20 @@ module cube {
       @title = Title();
       @problems = [];
       @ninja = cubesvgs.Ninja();
-      @frame = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'frame'}).add(
-        monads.DOMable({tagName:'div'}).on('load').attributes({'class':'inner'}).add(
-          @title
-        )
-      );
-      @ninja.element.insert(document.body);
-      @container = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'container'}).add(
-        @frame
-      ).insert(document.body);
+//      cubesvgs.Shuriken().insert(document.body);
+      @grid = cubes.Cubes();
+      @grid.element.insert(document.body);
+      @title.insert(document.body);
+      @page.add(@ninja.element).insert(document.body);
       @screens.element.insert(document.body);
       monads.DOMable({element:document.body}).on('touchstart',@ontouchstart).on('touchmove',@ontouchmove).on(['touchend'],@ontouchend);
       monads.DOMable({element:window}).on('orientationchange',@onorientationchange);
       @onorientationchange();
     }
     reset(side) {
+      @screens.top.style({'display':'none'});
       @screens.front.removeChildren().add(@sequence[3].board.element);
+      @title.style({'display':'none'});
       return this;
     }
     swipehint() {
@@ -511,24 +512,24 @@ module cube {
           @level = 1;
           minus = cubesvgs.Minus();
           @screens.front.add(plus).add(minus);
-          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},250);
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(98%)','opacity':'1'})},250);
           @ninja.rotateSword();
           break;
         case "2":
           @level = 2;
           minus = cubesvgs.Minus();
           @screens.front.add(plus).add(minus);
-          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},250);
-          @ninja.raiseSword();
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(98%)','opacity':'1'})},250);
+          @ninja.rotateSword();
           break;
         case "3":
           @level = 3;
           minus = cubesvgs.Minus();
           multiply = cubesvgs.Multiply();
           @screens.front.add(plus).add(minus).add(multiply);
-          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},250);
-          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(150%)','opacity':'1'})},500);
-          @ninja.raiseSword();
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(98%)','opacity':'1'})},250);
+          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(200%)','opacity':'1'})},500);
+          @ninja.rotateSword();
           break;
         case "4":
         default:
@@ -537,30 +538,31 @@ module cube {
           multiply = cubesvgs.Multiply();
           divide = cubesvgs.Divide();
           @screens.front.add(plus).add(minus).add(multiply).add(divide);
-          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(73%)','opacity':'1'})},250);
-          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(150%)','opacity':'1'})},500);
-          setTimeout(function(){divide.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(225%)','opacity':'1'})},1000);
-          @ninja.raiseSword();
+          setTimeout(function(){minus.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(98%)','opacity':'1'})},250);
+          setTimeout(function(){multiply.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(200%)','opacity':'1'})},500);
+          setTimeout(function(){divide.style({'-webkit-transition':'-webkit-transform 1s, opacity 1s','-webkit-transform':'translateX(300%)','opacity':'1'})},1000);
+          @ninja.rotateSword();
           break;
       }
       @screens.showFront();
     }
     onplay(event) {
+      @grid.animate();
       @checker = Checker({level:@level});
       @color = event.detail.color, @operation = event.detail.operation;
       for(var i = 0; i < 10; ++i) {
         @equations.push(Equation({operation:@operation,level:@level,color:@color}));
       }
-      @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
       @equation = @equations.pop();
-      @sequence[@activeSide%4].board.addEquation(@equation.equation + ' ' + @bestGuess);
-      @screens.rotateRight();
       @problems.push(@equation);
+      @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
+      @sequence[@activeSide%4].board.addEquation(@equation.equation + ' ' + @bestGuess);
+      @screens.element.element().style.webkitTransform = 'translateY(-9em)';
+      @screens.rotateRight();
       VerticalNumberStrip().insert(document.body);
-      @screens.top.style({'display':'none'});
-      setTimeout(@reset, 500);
       @ninja.play();
-      @screens.element.add(ResultsDropDown({title:belts.WhiteBelt()}));
+//      @screens.element.add(ResultsDropDown({title:belts.Belt()}));
+      setTimeout(@reset, 500);
       setTimeout(@swipehint, 500);
     }
     onguess(event) {
@@ -641,15 +643,8 @@ module cube {
     ]
     static init = (function() {
       var styles = [
-        {selector:'@font-face',style:'font-family:Albertino;src:url(/cube/lib/Albertino_1.0.ttf);'},
-        {selector:'body',style:"background:white;"},
-        {selector:'#container',style:"position:absolute;left:45%;margin-left:-100px;top:35%;margin-top:-100px;height:200px;width:200px;-webkit-perspective:800;"},
-        {selector:'#frame',style:"opacity: 1.0;width: 200px;-webkit-transform-style: preserve-3d;-webkit-transform: translateZ(150px);-webkit-transition: all 0.5s linear;"},
-        {selector:'.inner',style:"height:200px;width:200px;-webkit-transform-style: preserve-3d;-webkit-transform: rotateY(230deg);"},
-        {selector:'.inner div',style:"position: absolute;height:200px;width:200px;background-size: 100% 100%;opacity: 1;-webkit-transform: rotateX(-90deg);"},
-        {selector:'.inner .e',style:"top:100px;font-size:80px;"},
-        {selector:'.inner .f',style:"top:-100px;"},
-        {selector:'.inner .f',style:"top:-100px;"}
+        {selector:'@font-face',style:'font-family:Albertino;src:url(lib/Albertino_1.0.ttf);'},
+        {selector:'body',style:"background:white;"}
       ];
       monads.Styleable(styles).on("load").onstyle();
     })()
