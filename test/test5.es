@@ -1,3 +1,3 @@
 module monads from 'monads';
 module cubes from 'cubes';
-cubes.Cubes().insert(document.body);
+cubes.Cubes().element.insert(document.body);

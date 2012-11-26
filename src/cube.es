@@ -486,8 +486,6 @@ module cube {
       @problems = [];
       @ninja = cubesvgs.Ninja();
 //      cubesvgs.Shuriken().insert(document.body);
-      @grid = cubes.Cubes();
-      @grid.element.insert(document.body);
       @title.insert(document.body);
       @page.add(@ninja.element).insert(document.body);
       @screens.element.insert(document.body);
@@ -547,7 +545,9 @@ module cube {
       @screens.showFront();
     }
     onplay(event) {
-      @grid.animate();
+      @grid = cubes.Cubes();
+      @grid.element.insert(document.body);
+//      @grid.animate();
       @checker = Checker({level:@level});
       @color = event.detail.color, @operation = event.detail.operation;
       for(var i = 0; i < 10; ++i) {
