@@ -452,7 +452,7 @@ module cube {
   };
   export class Main {
     constructor() {
-      private activeSide, bestGuess, checker, color, equation, equations, grid, level, ninja, operation, page, problems, play, screens, sequence, title;
+      private activeSide, bestGuess, checker, color, equations, grid, level, ninja, operation, page, play, screens, title;
       @ontouchstart = @ontouchstart.bind(this);
       @ontouchmove = @ontouchmove.bind(this);
       @ontouchend = @ontouchend.bind(this);
@@ -473,29 +473,17 @@ module cube {
       @page = monads.DOMable({tagName:'div'}).on('load').attributes({'id':'page'});
       @screens = Container({controller:this,top:Levels()}).showTop();
       @level = 1;
-      @sequence = [
-        {side:'right',board:planks.WoodPlank()},
-        {side:'back',board:planks.WoodPlank()},
-        {side:'left',board:planks.WoodPlank()},
-        {side:'front',board:planks.WoodPlank()}
-      ];
-      @screens.right.add(@sequence[0].board.element);
-      @screens.back.add(@sequence[1].board.element);
-      @screens.left.add(@sequence[2].board.element);
       @title = Title();
-      @problems = [];
-      @ninja = cubesvgs.Ninja();
-//      cubesvgs.Shuriken().insert(document.body);
       @title.insert(document.body);
-      @page.add(@ninja.element).insert(document.body);
       @screens.element.insert(document.body);
+      @ninja = cubesvgs.Ninja();
+      @page.add(@ninja.element).insert(document.body);
       monads.DOMable({element:document.body}).on('touchstart',@ontouchstart).on('touchmove',@ontouchmove).on(['touchend'],@ontouchend);
       monads.DOMable({element:window}).on('orientationchange',@onorientationchange);
       @onorientationchange();
     }
     reset(side) {
       @screens.top.style({'display':'none'});
-      @screens.front.removeChildren().add(@sequence[3].board.element);
       @title.style({'display':'none'});
       return this;
     }
@@ -547,21 +535,22 @@ module cube {
     onplay(event) {
       @grid = cubes.Cubes();
       @grid.element.insert(document.body);
-//      @grid.animate();
       @checker = Checker({level:@level});
       @color = event.detail.color, @operation = event.detail.operation;
       for(var i = 0; i < 10; ++i) {
         @equations.push(Equation({operation:@operation,level:@level,color:@color}));
       }
-      @equation = @equations.pop();
-      @problems.push(@equation);
       @title.style({'-webkit-transform':'translateX(-150px) translateY(-120px) rotateY(-230deg) rotateX(76deg)'});
-      @sequence[@activeSide%4].board.addEquation(@equation.equation + ' ' + @bestGuess);
+      @grid.containers.forEach(function(container,i) {
+        var side = container.child(2);
+        var board = side.childNodes.item(1);
+        var equation = board.childNodes.item(1);
+        monads.DOMable({element:equation}).on('load').style({width:'750px',height:'150px'}).updateText(@equations[i].equation + ' ' + @bestGuess);
+      },this);
       @screens.element.element().style.webkitTransform = 'translateY(-9em)';
       @screens.rotateRight();
       VerticalNumberStrip().insert(document.body);
       @ninja.play();
-//      @screens.element.add(ResultsDropDown({title:belts.Belt()}));
       setTimeout(@reset, 500);
       setTimeout(@swipehint, 500);
     }
@@ -578,25 +567,18 @@ module cube {
           @bestGuess += number;
         }
       }
-      @sequence[@activeSide%4].board.addEquation(@equation.equation + ' ' + @bestGuess);
-      @screens.enabled = true;
+      monads.DOMable({element:@grid.containers[0].child(2).childNodes.item(1).childNodes.item(1)}).on('load').style({width:'750px',height:'150px'}).updateText(@equations[0].equation + ' ' + @bestGuess);
+      @onnext();
     }
     onnext(event) {
-      var answer = @equation.answer;
+      var answer = @equations[0].answer;
       var guess = parseInt(@bestGuess);
       var correct = answer === guess;
-      @checker.answer(correct);
-      @bestGuess = '?';
-      @screens.enabled = false;
-      var oldboard = @sequence[@activeSide%4].board;
-      @activeSide++;
-      var oldequation = @equation;
-      @equation = @equations.pop();
-      @sequence[@activeSide%4].board.addEquation(@equation.equation + ' ' + @bestGuess);
-      setTimeout(function(){
-        oldequation.equation = "";
-      },500);
-      @problems.push(@equation);
+      if(correct) {
+        @bestGuess = '?';
+        @equations.shift();
+        @grid.advance();
+      }
     }
     ontouchstart(event) {
       event.preventDefault();
